@@ -5,8 +5,7 @@ const fs = promises
 class ProductManagerFile {
     constructor(){
         this.path = 'database/Users.json'
-    }
-
+}
 
 readFileProducts = async () => {
     try {
@@ -24,9 +23,10 @@ getProductsById = async (pid) => {
         const products = await this.readFileProducts()
         let product = products.find(product => product.id === pid)
         if (!product) {
-        return "Product not found"
-    }
+        return console.log("Product not found")
+        } else {
         return console.log(product)
+        }
     } catch (error) {
         console.log("Couldn't get product by id  " + error)
     }
@@ -48,7 +48,7 @@ addProduct = async ({title, description, price, thumbnail, code, stock}) => {
 
         return console.log("Added product")
     } catch (error) {
-        console.log("Couldn't add product " + error)
+        console.log("Couldnt add product " + error)
     }
 }
 
@@ -110,7 +110,7 @@ const prod2 = {
 productsFile.addProduct(prod)
 productsFile.addProduct(prod2)
 productsFile.getProducts()
-productsFile.getProductsById(1)
+productsFile.getProductsById(2)
 productsFile.updateProduct(2, { price: 800 })
 // productsFile.deleteProduct(2)
 
