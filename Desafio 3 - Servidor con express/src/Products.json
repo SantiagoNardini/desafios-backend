@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Camiseta Boca Juniors",
+    "description": "Camiseta futbol",
+    "price": 200,
+    "thumbnail": "Sin imagen",
+    "code": "abc123",
+    "stock": 25,
+    "id": 1
+  },
+  {
+    "title": "Camiseta River Plate",
+    "description": "Camiseta futbol",
+    "price": 100,
+    "thumbnail": "Sin imagen",
+    "code": "drp120",
+    "stock": 15,
+    "id": 2
+  },
+  {
+    "title": "Pelota futbol",
+    "description": "Pelota",
+    "price": 50,
+    "thumbnail": "Sin imagen",
+    "code": "frt421",
+    "stock": 8,
+    "id": 3
+  }
+]
