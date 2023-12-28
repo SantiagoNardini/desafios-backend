@@ -4,7 +4,7 @@ const fs = promises
 
 class CartManager {
     constructor() {
-        this.path = './cart.json';
+        this.path = './carts.json';
     }
     async getCarts() {
         try {
@@ -54,27 +54,29 @@ class CartManager {
     }
 
     async addProductToCart(cid, pid) {
-        const carts = await this.getCarts();
-        const cart = carts.find((cart) => cart.id === cid);
-        if (cart) {
-            cart.products.push(product);
-            await fs.writeFile(this.path, JSON.stringify(carts, null, 2));
-            return cart;
-        } 
-        const product = {
-            id: parseInt(pid),
-            quantity: 1
+        try {
+            const carts = await this.readFile()
+        const cartIndex = carts.findIndex(cart => cart.id === cid)
+
+        if (cartIndex === -1) {
+            return "Cart not found"
         }
 
-        const cartProducts = carts[index].products
-        const productExist = cartProducts.find(cartProduct => cartProduct.id === product.id)
-        if (productExist) {
-            productExist.quantity++
+        const productIndex = carts[cartIndex].products.findIndex(produc => produc.product === pid)
+        if (productIndex === -1) {
+            carts[cartIndex].products.push({
+                product: pid,
+                quantity: 1
+            })
         } else {
-            cartProducts.push(product)
+            carts[cartIndex].products[productIndex].quantity += 1
         }
-        await fs.writeFile(this.path, JSON.stringify(carts, null, 2))
-        return carts[index]
+        await fs.writeFile(this.path, JSON.stringify(carts, null, 2), 'utf-8')
+        return carts[cartIndex]
+        } catch (error) {
+            return error
+        }
+        
     }
 }
 

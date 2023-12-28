@@ -26,11 +26,9 @@ CartRouter.get("/:cid", async (req, res) => {
 
 CartRouter.post("/:cid/product/:pid", async (req, res) => {
     try {
-        const cid = req.params.cid
-        const pid = req.params.pid
-        const newProduct = req.body
-        const addedProduct = await manager.addProductToCart(cid, pid, newProduct)
-        res.send(addedProduct)
+        const { cid, pid } = req.params
+        const result = await manager.addProductToCart(cid, pid, quantity)
+        res.send({ status: "success", payload: result })
     } catch (error) {
         return res.status(404).send({ status: "error", msg: "Product could not be added" })
     }
