@@ -56,28 +56,39 @@ class CartManager {
     async addProductToCart(cid, pid) {
         try {
             const carts = await this.readFile()
-        const cartIndex = carts.findIndex(cart => cart.id === cid)
-
-        if (cartIndex === -1) {
-            return "Cart not found"
-        }
-
-        const productIndex = carts[cartIndex].products.findIndex(produc => produc.product === pid)
-        if (productIndex === -1) {
-            carts[cartIndex].products.push({
-                product: pid,
-                quantity: 1
-            })
-        } else {
-            carts[cartIndex].products[productIndex].quantity += 1
-        }
-        await fs.writeFile(this.path, JSON.stringify(carts, null, 2), 'utf-8')
-        return carts[cartIndex]
+            const cartIndex = carts.findIndex(cart => cart.id === cid)
+            if (cartIndex === -1){
+                return `El carrito con ID "${cid}" no existe`
+            }
+    
+            const productIndex = carts[cartIndex].products.findIndex(prod => prod.id === pid)
+            if (productIndex === -1){
+                carts[cartIndex].products.push({
+                    id: pid,
+                    quantity: 1
+                })
+                console.log(carts[cartIndex])
+            } else {
+                carts[cartIndex].products[productIndex].quantity ++
+            }
+            
+            await fs.writeFile(this.path, JSON.stringify(carts, null, 2), 'utf-8')
+            return carts[cartIndex]
+            
         } catch (error) {
             return error
         }
-        
     }
 }
+
+carts = [{
+    id: 2343242,
+    products: [
+        {
+            product: 'celular',
+            quantity: 2
+        }
+    ]
+}]
 
 export default CartManager
