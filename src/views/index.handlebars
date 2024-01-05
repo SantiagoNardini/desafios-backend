@@ -1,13 +1,5 @@
 <div>
-    <h1>Hola, {{name}}, Bienvenido!</h1>
-    {{#if isAdmin}}
-    {{#each food}}
-    <div>
-        <p>{{this.name}}</p>
-        <p>{{this.price}}</p>
-    </div>
-    {{/each}}
-    {{else}}
-    <p>No eres administrador</p>
-    {{/if}}
+   <h1>Bienvenido a Socket!</h1>
 </div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>

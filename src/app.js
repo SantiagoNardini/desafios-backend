@@ -1,8 +1,11 @@
 import express from "express";
+import __dirname from './utils.js';
+import handlebars from "express-handlebars"
 import ProductsRouter from "./routes/product.router.js"
 import CartRouter from "./routes/cart.router.js"
-import handlebars from "express-handlebars"
-import __dirname from './utils.js';
+import viewsRouter from "./routes/views.router.js"
+import { Server } from "socket.io";
+import { manager } from "./managers/productManagerFile.js";
 
 const app = express()
 
@@ -14,32 +17,41 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(express.static('public'));
 
+app.use('/', viewsRouter)
 app.use('/api/products', ProductsRouter)
 app.use('/api/carts', CartRouter)
 
-let food = [
-    {name: 'pizza', price: 1000},
-    {name: 'hamburguesa', price: 2000},
-    {name: 'papas fritas', price: 3000},
-    {name: 'coca', price: 3000},
-    {name: 'agua', price: 3000},
-]
-
-app.get('/', (req, res)=>{
-    let testUser = {
-        name: 'Cristian',
-        last_name: 'Gonzalez',
-        role: 'admin'
-    }
-
-
-res.render('index', {
-    user: testUser,
-    isAdmin:testUser.role === 'admin',
-    food
-})
-})
-
-app.listen(8080, ()=>{
+const httpServer = app.listen(8080, ()=>{
     console.log('Escuchando en el puerto 8080')
 } )
+
+const socketServer = new Server(httpServer)
+
+socketServer.on("connection", async (socket) => {
+    console.log("Nuevo cliente conectado!");
+    const data = await manager.getProducts();
+    
+    if (data) {
+        socketServer.emit("resp-new-product", data);
+    }
+    socket.on("new-product", async (data) => {
+      const result = await manager.addProduct(data);
+      const products = await manager.getProducts();
+      if (result) {
+        socket.emit("resp-new-product", "Se agrego el producto");
+      } 
+      else if (products) {
+        socketServer.emit("resp-new-product", products);
+      }
+      console.log(data);
+    });
+    socket.on("delete-product", async (id) => {
+      const result = await manager.deleteProduct(parseInt(id));
+      const products = await manager.getProducts();
+      if (result) {
+        socket.emit("resp-delete-product", "Se elimino el producto");
+      } else if (products) {
+            socketServer.emit("resp-delete-product", products);
+      }
+    });
+  });

@@ -1,9 +1,9 @@
 import { Router } from "express"
-import ProductManagerFile from "../managers/productManagerFile.js"
+import { manager } from "../managers/productManagerFile.js"
 
 const ProductsRouter = Router()
 
-const manager = new ProductManagerFile
+
 
 ProductsRouter.get("/", async (req, res) => {
    try {

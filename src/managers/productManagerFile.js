@@ -90,4 +90,6 @@ deleteProduct = async (id) => {
 }
 }
 
-export default ProductManagerFile;
+const manager = new ProductManagerFile();
+
+export { manager, ProductManagerFile };
