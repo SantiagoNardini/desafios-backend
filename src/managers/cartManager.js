@@ -81,14 +81,4 @@ class CartManager {
     }
 }
 
-carts = [{
-    id: 2343242,
-    products: [
-        {
-            product: 'celular',
-            quantity: 2
-        }
-    ]
-}]
-
 export default CartManager

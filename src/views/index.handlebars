@@ -1,0 +1,13 @@
+<div>
+    <h1>Hola, {{name}}, Bienvenido!</h1>
+    {{#if isAdmin}}
+    {{#each food}}
+    <div>
+        <p>{{this.name}}</p>
+        <p>{{this.price}}</p>
+    </div>
+    {{/each}}
+    {{else}}
+    <p>No eres administrador</p>
+    {{/if}}
+</div>
