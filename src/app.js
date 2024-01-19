@@ -4,10 +4,15 @@ import handlebars from "express-handlebars"
 import ProductsRouter from "./routes/product.router.js"
 import CartRouter from "./routes/cart.router.js"
 import viewsRouter from "./routes/views.router.js"
+import UserRouter from "./routes/user.router.js"
 import { Server } from "socket.io";
-import { manager } from "./managers/productManagerFile.js";
+import { manager } from "./dao/productManagerFile.js";
+import connectDB from "./config/connectDB.js";
+import logger from 'morgan';
 
 const app = express()
+
+connectDB()
 
 app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
@@ -15,11 +20,13 @@ app.set('view engine', 'handlebars')
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-app.use(express.static('public'));
+app.use(express.static( __dirname +'public'));
+app.use(logger('dev'));
 
 app.use('/', viewsRouter)
 app.use('/api/products', ProductsRouter)
 app.use('/api/carts', CartRouter)
+app.use('/api/users', UserRouter)
 
 const httpServer = app.listen(8080, ()=>{
     console.log('Escuchando en el puerto 8080')
