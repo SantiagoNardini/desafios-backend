@@ -1,38 +1,87 @@
 import { Router } from "express"
-import CartManager from "../dao/cartManager.js"
+import { cartModel } from "../dao/models/carts.model.js"
 
 const CartRouter = Router()
 
-const manager = new CartManager()
-
-CartRouter.post("/", async (req, res) => {
+CartRouter.get("/", async (req, res) => {
     try {
-        const newCart = await manager.addCart()
-        res.send(newCart)
+        const carts = await cartModel.find({})
+        res.json({
+            status: 'success',
+            result: carts
+        })
     } catch (error) {
-        return res.status(400).send(error.message)
+        console.log(error)
     }
 })
 
 CartRouter.get("/:cid", async (req, res) => {
     try {
-        const cid = req.params.cid
-        const foundCart = await manager.getCartById(parseInt(cid));
-        res.send(foundCart)
+        const { cid } = req.params
+        const cart = await cartModel.findOne({_id: cid})
+        res.json({
+            status: 'success',
+            result: cart
+        })
     } catch (error) {
-        return res.status(404).send({ status: "error", msg: "Product not found" })
+        console.log(error)
     }
 })
+
+CartRouter.post("/", async (req, res) => {
+    try {
+        const { body } = req
+        const result = await cartModel.create(body)
+
+        res.json({
+            status: 'success',
+            result
+        })
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+})
+
 
 CartRouter.post("/:cid/product/:pid", async (req, res) => {
     try {
         const { cid, pid } = req.params
-        const result = await manager.addProductToCart(Number(cid), Number(pid))
-        res.send({ status: "success", payload: result })
+        const updateCart = await cartModel.updateOne({_id: cid}, {$push: {products: pid}})
+        res.json({
+            status: 'success',
+            result: updateCart
+        })
     } catch (error) {
-        return res.status(404).send({ status: "error", msg: "Product could not be added" })
+        console.log(error)
     }
     
 })
+
+CartRouter.put("/:cid/product/:pid", async (req, res) => {
+    try {
+        const { cid, pid } = req.params
+        const updateCart = await cartModel.updateOne({_id: cid}, {$pull: {products: pid}})
+        res.json({
+            status: 'success',
+            result: updateCart
+        })
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+CartRouter.delete("/:cid", async (req, res) => {
+    try {
+        const { cid } = req.params
+        const deleteCart = await cartModel.deleteOne({_id: cid})
+        res.json({
+            status: 'success',
+            result: deleteCart
+        })
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 
 export default CartRouter;

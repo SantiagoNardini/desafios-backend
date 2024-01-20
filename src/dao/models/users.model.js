@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const userCollection = 'users'
+const userCollection = "users"
 
 const userSchema = new mongoose.Schema({
     firstName: String,
@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 })
 

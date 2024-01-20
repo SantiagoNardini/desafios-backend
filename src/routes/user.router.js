@@ -1,13 +1,15 @@
 import { Router } from 'express'
-import { userModel } from '../models/users.model.js'
+import { userModel } from '../dao/models/users.model.js'
 
 const UserRouter = Router()
 
 UserRouter.get('/', async (req, res)=>{  
     try {
         const users = await userModel.find({})
-
-        res.send(users)
+        res.json({
+            status: 'success',
+            result: users
+        })
     } catch (error) {
         console.log(error)
     }
@@ -16,50 +18,50 @@ UserRouter.get('/', async (req, res)=>{
 
 
 UserRouter.get('/:uid', async (req, res)=>{
-    const { uid } = req.params
-    const user = await userModel.findOne({_id: uid})
-
-    // console.log(req.params)
-
-    res.send(user)
-}) 
+    try {
+        const { uid } = req.params
+        const user = await userModel.findOne({_id: uid})
+        res.json({
+            status: 'success',
+            result: user
+        })
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 UserRouter.post('/', async (req, res)=>{
-    const {firstName, lastName, email, password } = req.body
-   
-    const userNew = {
-        firstName,
-        lastName,
-        email,
-        password
+    try {
+        const { body } = req
+        const result = await userModel.create(body)
+
+        res.send({
+            status: 'success',
+            result
+        })
+    } catch (error) {
+        console.log(error)
     }
-
-    const result = await userModel.create(userNew)
-
-    res.status(200).send({
-        status: 'success',
-        usersCreate: result
-    })
-}) 
+})
 
 
 UserRouter.put('/:uid', async (req, res)=>{
-    const {uid} = req.params
-    const userToUpdate = req.body
-
-    const result = await userModel.findOneAndUpdate({_id: uid}, userToUpdate, {new: true})
-
-    res.status(200).send({
-        status: 'success',
-        message: result
-    })
-}) 
+    try {
+        res.send('Updated user')
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 
 UserRouter.delete('/:uid', async (req, res)=>{
-    const {uid} = req.params
-    const result = await userModel.findByIdAndDelete({_id: uid})
-    res.send(result)
+    try {
+        const {uid} = req.params
+        const result = await userModel.findByIdAndUpdate({_id:uid}, {isActive: false})
+        res.send('Deleted user')
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 export default UserRouter

@@ -1,47 +1,45 @@
 import { Router } from "express"
-import { manager } from "../dao/productManagerFile.js"
+import { productsModel } from "../dao/models/products.model.js"
 
 const ProductsRouter = Router()
 
+ProductsRouter.get('/', async (req, res)=>{  
+    try {
+        const products = await productsModel.find({})
+        res.json({
+            status: 'success',
+            result: products
+        })
+    } catch (error) {
+        console.log(error)
+    }
 
-
-ProductsRouter.get("/", async (req, res) => {
-   try {
-        const { limit } = req.query
-        const products = await manager.getProducts()
-        const limitProducts = limit ? products.slice(0, limit) : products
-        res.send(limitProducts)
-   } catch (error) {
-        return res.status(400).send(error.message)
-   }
-})
+}) 
 
 ProductsRouter.get("/:pid", async (req, res) => {
     try {
-        const { pid } = req.params;
-        const foundProduct = await manager.getProductsById(parseInt(pid));
-        res.send(foundProduct)
+        const pid = req.params.pid
+        const foundProduct = await productsModel.findOne({_id: pid})
+        res.send({ 
+            status: "successful",
+            foundProduct });
     } catch (error) {
-        return res.status(400).send(error.message)
+        console.log(error)
     }
 })
 
 ProductsRouter.post("/", async (req, res) => {
     try {
         const product = req.body
-    product.id = await manager.generateId()
-    product.status = true
-    if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock) {
-        return res.status(400).send("Incomplete data")
-    }
-    const addProduct = await manager.addProduct(product)
-    if (!addProduct) {
-        return res.status(400).send("Product cannot be added")
-    } else {
-        return res.send({ status: "success", msg: "Product added successfully"})
-    }
+        const newProduct = new productsModel.create(product)
+
+        res.send({ 
+            status: "success", 
+            msg: "Product created", 
+            newProduct })
+   
     } catch (error) {
-        res.status(400).send({ status: "error", msg: "Invalid Product" })
+        console.log(error)
     }
     
 })
@@ -49,15 +47,14 @@ ProductsRouter.post("/", async (req, res) => {
 ProductsRouter.put("/:pid", async (req, res) => {
     try {
         const pid = req.params.pid
-        const newProduct = req.body
-        const updateProduct = await manager.updateProduct(pid, newProduct)
-    if (!updateProduct) {
-        return res.status(404).send("Product cannot be updated")
-    } else {
-        return res.send({ status: "success", msg: "Updated Product"})
-    }
+        const product = req.body
+        const updateProduct = await productsModel.updateOne({_id: pid}, product)
+        res.send({ 
+            status: "success",
+            msg: "Product updated",
+            updateProduct })
     } catch (error) {
-        res.status(404).send({ status: "error", msg: "Product cannot be updated" })
+        console.log(error)
     }
     
 })
@@ -65,14 +62,13 @@ ProductsRouter.put("/:pid", async (req, res) => {
 ProductsRouter.delete("/:pid", async (req, res) => {
     try {
         const pid = req.params.pid
-        const deleteProduct = await manager.deleteProduct(pid)
-    if (!deleteProduct) {
-        return res.status(404).send("Product cannot be deleted")
-    } else {
-        return res.send({ status: "success", msg: "Deleted Product"})
-    }
+        const deleteProduct = await productsModel.deleteOne({_id: pid})
+        res.send({ 
+            status: "success",
+            msg: "Product deleted",
+            deleteProduct })
     } catch (error) {
-        res.status(404).send({ status: "error", msg: "Product cannot be deleted!" })
+        console.log(error)
     }
     
 })

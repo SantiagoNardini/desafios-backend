@@ -1,5 +1,9 @@
 <div>
    <h1>Bienvenido a Socket!</h1>
+   <form action="/file" method="POST" enctype="multipart/form-data">
+        <input type="file" name="myFile">
+        <button>enviar</button>
+    </form>
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/index.js"></script>
