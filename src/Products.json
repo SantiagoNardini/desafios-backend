@@ -45,12 +45,57 @@
     "id": 5
   },
   {
-    "title": "Camiseta suplente Newells",
+    "title": "Camiseta suplente Newells 2024",
     "description": "Camiseta",
     "price": 90,
     "thumbnail": "Sin imagen",
-    "code": "rew121",
+    "code": "ewq556",
     "stock": 17,
     "id": 6
+  },
+  {
+    "title": "Camiseta titular Aldosivi 2024",
+    "description": "Camiseta",
+    "price": 90,
+    "thumbnail": "Sin imagen",
+    "code": "aae789",
+    "stock": 17,
+    "id": 7
+  },
+  {
+    "title": "Camiseta titular Boca Juniors 2019",
+    "description": "Camiseta",
+    "price": 90,
+    "thumbnail": "Sin imagen",
+    "code": "ghu657",
+    "stock": 17,
+    "id": 8
+  },
+  {
+    "title": "Camiseta suplente River 2004",
+    "description": "Camiseta",
+    "price": 90,
+    "thumbnail": "Sin imagen",
+    "code": "ret221",
+    "stock": 17,
+    "id": 9
+  },
+  {
+    "title": "Camiseta alternativa Independiente 2021",
+    "description": "Camiseta",
+    "price": 90,
+    "thumbnail": "Sin imagen",
+    "code": "kop321",
+    "stock": 17,
+    "id": 10
+  },
+  {
+    "title": "Camiseta titular Racing 2012",
+    "description": "Camiseta",
+    "price": 90,
+    "thumbnail": "Sin imagen",
+    "code": "ioo790",
+    "stock": 17,
+    "id": 11
   }
 ]

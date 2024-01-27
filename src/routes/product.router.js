@@ -5,10 +5,15 @@ const ProductsRouter = Router()
 
 ProductsRouter.get('/', async (req, res)=>{  
     try {
-        const products = await productsModel.find({})
-        res.json({
+        const {docs, hasPrevPage, hasNextPage, nextPage, prevPage, page} = await productsModel.paginate({}, {limit: 10, page: 1, lean: true})
+        res.send({
             status: 'success',
-            result: products
+            payload: docs,
+            hasPrevPage,
+            hasNextPage,
+            nextPage,
+            prevPage,
+            page
         })
     } catch (error) {
         console.log(error)

@@ -1,0 +1,17 @@
+<div>
+    <center>
+        <h1>Products</h1>
+        
+        {{#each docs}}
+            <p><strong>Title: </strong>{{this.title}} - <strong>Description: </strong>{{this.description}}</p>
+        {{/each}}
+        {{#if hasPrevPage}}
+            <a href="products?pageQuery={{prevPage}}">Anterior</a>
+        {{/if}}
+        <label>{{page}}</label>
+        {{#if hasNextPage}}
+            <a href="products?pageQuery={{nextPage}}">Siguiente</a>
+        {{/if}}
+
+    </center>
+</div>

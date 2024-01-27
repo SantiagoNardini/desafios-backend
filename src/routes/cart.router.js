@@ -83,5 +83,56 @@ CartRouter.delete("/:cid", async (req, res) => {
     }
 })
 
+CartRouter.delete("api/carts/:cid/products/:pid", async (req, res) => {
+    try {
+        const { cid, pid } = req.params
+        const deleteCart = await cartModel.updateOne({_id: cid}, {$pull: {products: pid}})
+        res.json({
+            status: 'success',
+            result: deleteCart
+        })
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+CartRouter.put("api/carts/:cid", async (req, res) => {
+    try {
+        const { cid } = req.params
+        const updateCart = await cartModel.updateOne({_id: cid}, req.body)
+        res.json({
+            status: 'success',
+            result: updateCart
+        })
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+CartRouter.put("api/carts/:cid/products/:pid", async (req, res) => {
+    try {
+        const { cid, pid } = req.params
+        const updateCart = await cartModel.updateOne({_id: cid}, {$push: {products: pid}})
+        res.json({
+            status: 'success',
+            result: updateCart
+        })
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+CartRouter.delete("api/carts/:cid", async (req, res) => {
+    try {
+        const { cid } = req.params
+        const deleteCart = await cartModel.deleteOne({_id: cid})
+        res.json({
+            status: 'success',
+            result: deleteCart
+        })
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 export default CartRouter;

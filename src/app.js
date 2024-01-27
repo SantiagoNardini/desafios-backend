@@ -29,6 +29,7 @@ app.use('/api/products', ProductsRouter)
 app.use('/api/carts', CartRouter)
 app.use('/api/users', UserRouter)
 app.use('/api/messages', MessageRouter)
+app.use('/products', ProductsRouter)
 
 app.post('/file', upload.single('myFile'), (req, res) => {
   res.send("File uploaded successfully")
