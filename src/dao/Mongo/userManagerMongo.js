@@ -1,4 +1,4 @@
-import { userModel } from "../models/users.model";
+import { userModel } from "../models/users.model.js";
 
 class UserManagerMongo {
     async getUsers() {
@@ -12,6 +12,15 @@ class UserManagerMongo {
     async getUserById(uid) {
         try {
             const user = await userModel.findOne({_id: uid})
+            return user
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async getUserBy(filter) {
+        try {
+            const user = await userModel.findOne(filter)
             return user
         } catch (error) {
             console.log(error)

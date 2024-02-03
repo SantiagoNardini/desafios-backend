@@ -6,10 +6,16 @@ import CartRouter from "./routes/cart.router.js"
 import viewsRouter from "./routes/views.router.js"
 import UserRouter from "./routes/user.router.js"
 import MessageRouter from "./routes/messages.routes.js"
+import pruebasRouter from "./routes/pruebas.router.js"
+import sessionsRouter from "./routes/sessions.router.js"
 import { Server } from "socket.io";
 import { manager } from "./dao/FileSystem/productManagerFile.js";
 import connectDB from "./config/connectDB.js";
 import logger from 'morgan';
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import FileStore from 'session-file-store'
+import MongoStore from "connect-mongo";
 
 const app = express()
 
@@ -21,8 +27,35 @@ app.set('view engine', 'handlebars')
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-app.use(express.static( __dirname +'public'));
-app.use(logger('dev'));
+app.use(express.static( __dirname +'public'))
+app.use(logger('dev'))
+app.use(cookieParser('coderhouse'))
+
+// const fileStore = FileStore(session);
+// app.use(session({
+//   store: new fileStore({
+//     path: './sessions',
+//     ttl: 100,
+//     retries: 0
+//   }),
+//   secret: 'secretCoder',
+//   resave: true,
+//   saveUninitialized: true
+// }))
+
+const fileStore = FileStore(session);
+app.use(session({
+  store: MongoStore.create({
+    mongoUrl: 'mongodb+srv://CoderUser:1234@codercluster.v6fm1bm.mongodb.net/ecommerce',
+    mongoOptions: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true},
+    ttl: 60 * 60 * 1000 * 24
+  }),
+  secret: 'secretCoder',
+  resave: true,
+  saveUninitialized: true
+}))
 
 app.use('/', viewsRouter)
 app.use('/api/products', ProductsRouter)
@@ -30,6 +63,8 @@ app.use('/api/carts', CartRouter)
 app.use('/api/users', UserRouter)
 app.use('/api/messages', MessageRouter)
 app.use('/products', ProductsRouter)
+app.use('/pruebas', pruebasRouter)
+app.use('/sessions', sessionsRouter)
 
 app.post('/file', upload.single('myFile'), (req, res) => {
   res.send("File uploaded successfully")
