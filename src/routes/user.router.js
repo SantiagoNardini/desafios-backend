@@ -32,12 +32,20 @@ UserRouter.get('/:uid', async (req, res)=>{
 
 UserRouter.post('/', async (req, res)=>{
     try {
-        const { body } = req
-        const result = await userModel.create(body)
+        const {firstName, lastName, email, password} = req.body
+
+        const userNew  = {
+            firstName,
+            lastName,
+            email,
+            password,
+        }
+
+        const result = await userModel.create(userNew)
 
         res.send({
             status: 'success',
-            result
+            createUser: result
         })
     } catch (error) {
         console.log(error)

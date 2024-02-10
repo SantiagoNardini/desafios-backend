@@ -30,11 +30,11 @@ router.get("/carts/:cid", async(req, res) => {
     res.render("carts", {})
 })
 
-router.get("/login", (req, res) => {
+router.get("/sessions/login", (req, res) => {
     res.render("login")
 })
 
-router.get("/register", (req, res) => {
+router.get("/sessions/register", (req, res) => {
     res.render("register")
 })
 

@@ -16,6 +16,8 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import FileStore from 'session-file-store'
 import MongoStore from "connect-mongo";
+import passport from "passport";
+import initializePassport from "./config/passport.config.js";
 
 const app = express()
 
@@ -56,6 +58,9 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }))
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', viewsRouter)
 app.use('/api/products', ProductsRouter)
