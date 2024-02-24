@@ -46,21 +46,21 @@ app.use(cookieParser('coderhouse'))
 // }))
 
 const fileStore = FileStore(session);
-app.use(session({
-  store: MongoStore.create({
-    mongoUrl: 'mongodb+srv://CoderUser:1234@codercluster.v6fm1bm.mongodb.net/ecommerce',
-    mongoOptions: {
-      useNewUrlParser: true,
-      useUnifiedTopology: true},
-    ttl: 60 * 60 * 1000 * 24
-  }),
-  secret: 'secretCoder',
-  resave: true,
-  saveUninitialized: true
-}))
-initializePassport();
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(session({
+//   store: MongoStore.create({
+//     mongoUrl: 'mongodb+srv://CoderUser:1234@codercluster.v6fm1bm.mongodb.net/ecommerce',
+//     mongoOptions: {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true},
+//     ttl: 60 * 60 * 1000 * 24
+//   }),
+//   secret: 'secretCoder',
+//   resave: true,
+//   saveUninitialized: true
+// }))
+// initializePassport();
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 app.use('/', viewsRouter)
 app.use('/api/products', ProductsRouter)
