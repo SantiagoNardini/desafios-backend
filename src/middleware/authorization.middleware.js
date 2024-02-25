@@ -1,7 +1,11 @@
-export const authorization = role => {
+export const authorization = (roleArray) => {
     return async (req, res, next) => {
-        if (!req.user) return res.status(401).json({status: 'error', error: 'Unauthorized'})
-        if (req.user.role !== role) return res.status(401).json({status: 'error', error: 'Dont have permissions'})
+        if (roleArray[0] === 'user') return next()
+
+        if (!req.user) return res.status(401).json({status: 'error', error: 'Unhautoried'})
+
+        if (!roleArray.includes(req.user.role)) return res.status(403).json({status: 'error', error: 'Dont have permissions'})
+        
         next()
     }
 }

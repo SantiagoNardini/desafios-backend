@@ -40,12 +40,12 @@ router.post('/login', async (req, res)=> {
 
 router.post('/register', (req, res)=> {
     try {
-        const {firstName, lastName, email, password} = req.body
+        const {firstName, lastName, email, password, age} = req.body
     
-        console.log(firstName, lastName, email, password)
+        console.log(firstName, lastName, email, password, age)
         if (email === '' || password === '') return res.send('Data missing')
     
-        const newUser = {firstName, lastName, email, password: createHash(password)}
+        const newUser = {firstName, lastName, email, password: createHash(password), age}
         const result = sessionsService.createUser(newUser)
         
         const token = generateToken({

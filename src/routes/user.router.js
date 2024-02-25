@@ -1,11 +1,13 @@
 import { Router } from 'express'
 import { userModel } from '../dao/models/users.model.js'
+import { passportCall } from '../middleware/passportCall.js'
+import { authorization } from '../middleware/authorization.middleware.js'
 
 const UserRouter = Router()
 
-UserRouter.get('/', async (req, res)=>{  
+UserRouter.get('/', passportCall('jwt'), authorization(['user_premium','admin']), async (req, res)=>{  
     try {
-        const users = await userModel.find({})
+        const users = await userModel.find({isActive: true})
         res.json({
             status: 'success',
             result: users
@@ -32,13 +34,14 @@ UserRouter.get('/:uid', async (req, res)=>{
 
 UserRouter.post('/', async (req, res)=>{
     try {
-        const {firstName, lastName, email, password} = req.body
+        const {firstName, lastName, email, password, age} = req.body
 
         const userNew  = {
             firstName,
             lastName,
             email,
             password,
+            age
         }
 
         const result = await userModel.create(userNew)
