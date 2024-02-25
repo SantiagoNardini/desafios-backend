@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 
-const private_key = 'secretKey'
+export const private_key = 'secretKey'
 const generateToken = (user) => jwt.sign(user, private_key, {expiresIn: '24h'})
 
 export const authTokenMiddleware = (req, res, next) => {

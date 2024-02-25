@@ -58,8 +58,8 @@ const fileStore = FileStore(session);
 //   resave: true,
 //   saveUninitialized: true
 // }))
-// initializePassport();
-// app.use(passport.initialize());
+initializePassport();
+app.use(passport.initialize());
 // app.use(passport.session());
 
 app.use('/', viewsRouter)

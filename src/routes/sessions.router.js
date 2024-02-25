@@ -6,6 +6,8 @@ import { isValidPassword } from "../utils/hashBcrypt.js"
 import passport from "passport"
 import generateToken from "../utils/jsonWebToken.js"
 import { authTokenMiddleware } from "../utils/jsonWebToken.js"
+import { passportCall } from "../middleware/passportCall.js"
+import { authorization } from "../middleware/authorization.middleware.js"
 
 const router = Router()
 const sessionsService = new UserManagerMongo()
@@ -16,15 +18,15 @@ router.post('/login', async (req, res)=> {
 
         const user = await sessionsService.getUserBy({email})
 
-        if (!isValidPassword(password, user.password)) return res.status(401).send("Invalid credentials")
+        if (!isValidPassword({password: user.password}, password)) return res.status(401).send("Invalid credentials")
     
         const token = generateToken({
             fullname: `${user.firstName} ${user.lastName}`,
-            id: user._id,
+            role: user.role,
             email: user.email
         })
 
-        res.status(200).send({
+        res.status(200).cookie('cookieToken', token, {maxAge: 60 * 60 * 1000 * 24, httpOnly: true}).send({
             status: 'success',
             message: 'Logged in',
             token
@@ -50,7 +52,7 @@ router.post('/register', (req, res)=> {
             id: result._id
         })
 
-        res.status(200).send({
+        res.status(200).cookie('cookieToken', token, {maxAge: 60 * 60 * 1000 * 24, httpOnly: true}).send({
             status: 'success',
             message: 'User created',
             token
@@ -63,7 +65,7 @@ router.post('/register', (req, res)=> {
     }
 })
 
-router.get('/current', authTokenMiddleware, async (req, res)=> {
+router.get('/current', passportCall('jwt'), authorization('user') , async (req, res)=> {
     res.send('<h1>Datos sensibles</h1>')
 })
 

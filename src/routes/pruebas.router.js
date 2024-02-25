@@ -38,4 +38,8 @@ router.get('/deleteCookie', (req, res)=> {
     res.clearCookie('coderCookie').send('Cookie eliminada')
 })
 
+router.get('/:parametro', (req, res)=> {
+    res.send(req.params.parametro)
+})
+
 export default router
