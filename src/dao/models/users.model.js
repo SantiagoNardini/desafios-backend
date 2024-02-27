@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
    age: {
        type: Number,   
    },
+   cartID: {
+       type: mongoose.Schema.Types.ObjectId,
+       ref: 'carts'
+   },
    role: {
        type: String,
        enum: ['admin', 'user', 'premium'],
