@@ -1,6 +1,6 @@
 export const authorization = (roleArray) => {
     return async (req, res, next) => {
-        if (roleArray[0] === 'user') return next()
+        if (roleArray[0] === 'public') return next()
 
         if (!req.user) return res.status(401).json({status: 'error', error: 'Unhautoried'})
 

@@ -10,30 +10,57 @@ import { passportCall } from "../middleware/passportCall.js"
 import { authorization } from "../middleware/authorization.middleware.js"
 import passportJWT from "passport-jwt"
 import jwt from "jsonwebtoken"
+import { userModel } from "../dao/models/users.model.js";
 
 const router = Router()
 const sessionsService = new UserManagerMongo()
 
-router.post('/login', passport.authenticate('loginpassport', {session: false}), async (req, res) => {
-    if (!req.user) return res.status(401).send({ status: "error", error: "Invalid credentials" })
+router.post("/register", async(req, res) => {
+    const{firstName, lastName, email, password}= req.body
 
-    req.session.user = {
-        firstName: req.user.firstName,
-        lastName: req.user.lastName,
-        email: req.user.email
+    const userNew= {
+    firstName, 
+    lastName,
+    email,
+    password: createHash(password)
     }
-
-    res.send({status: 'success', message: 'User logged in', user: req.session.user})
+    const result = await userModel.create(userNew)
+    const token = generateToken({
+    firstName,
+    lastName,
+    id: result._id
 })
 
-router.post('/register', passport.authenticate('registerpassport', {session: false}), async (req, res)=> {
-    try {
-        const username = req.body.username || (req.user && req.user.username)
-        res.send({status: 'success', message: 'User created', username})
-  
-    } catch (error) {
-        res.send({status: 'error', error: error.message})
-    }
+res.cookie("cookieToken", token,{
+    maxAge: 60 * 60 * 1000 *24,
+    httpOnly: true
+}).send({
+    status: "success",
+    usersCreate: result, 
+    token
+})
+})
+
+router.post("/login", async (req,res)=>{
+    const {email, password} = req.body
+
+    const user= await userModel.findOne({email})
+    if(!isValidPassword(password, user.password)) return res.status(401).send("Invalid password")
+
+    const token = generateToken({
+    id: user._id,
+    email: user.email,
+    role: user.role
+    })
+
+    res.cookie("cookieToken", token, {
+        maxAge : 60 * 60 * 1000 *24,
+        httpOnly: true
+    }).send({
+        status: "success",
+        usersCreate: "login success", 
+        token
+    })
 })
 
 

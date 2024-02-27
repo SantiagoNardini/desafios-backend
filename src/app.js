@@ -60,7 +60,7 @@ app.use(session({
 }))
 initializePassport();
 app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.session());
 
 app.use('/', viewsRouter)
 app.use('/api/products', ProductsRouter)
