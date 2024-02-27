@@ -60,8 +60,8 @@ const initializePassport = () => {
     }))
 
     passport.use('loginpassport', new localStrategy(
-        {passReqToCallback: true, usernameField: 'email'}, 
-        async (req, username, password, done) => {
+        {usernameField: 'email'}, 
+        async (username, password, done) => {
         try {
             const user = await userModel.findOne({email: username})
 
@@ -76,6 +76,12 @@ const initializePassport = () => {
             return done(error)
         }
     })) 
+
+    passport.serializeUser((user, done) => {done(null, user._id)})
+    passport.deserializeUser( async (id, done) => {
+        let user = await userModel.findById({_id: id})
+        done(null, user)
+    })
 }
 
 export default initializePassport

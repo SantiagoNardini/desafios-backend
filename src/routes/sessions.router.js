@@ -9,80 +9,33 @@ import { authTokenMiddleware } from "../utils/jsonWebToken.js"
 import { passportCall } from "../middleware/passportCall.js"
 import { authorization } from "../middleware/authorization.middleware.js"
 import passportJWT from "passport-jwt"
+import jwt from "jsonwebtoken"
 
 const router = Router()
 const sessionsService = new UserManagerMongo()
 
-// router.post('/login', async (req, res)=> {
-//     try {
-//         const {email, password} = req.body
-
-//         const user = await sessionsService.getUserBy({email})
-
-//         if (!isValidPassword({password: user.password}, password)) return res.status(401).send("Invalid credentials")
-    
-//         const token = generateToken({
-//             fullname: `${user.firstName} ${user.lastName}`,
-//             role: user.role,
-//             email: user.email
-//         })
-
-//         res.status(200).cookie('cookieToken', token, {maxAge: 60 * 60 * 1000 * 24, httpOnly: true}).send({
-//             status: 'success',
-//             message: 'Logged in',
-//             token
-//         })
-        
-        
-//     } catch (error) {
-//         res.send({status: 'error', error: error.message})
-//     }
-// })
-
-// router.post('/register', (req, res)=> {
-//     try {
-//         const {firstName, lastName, email, password, age} = req.body
-    
-//         console.log(firstName, lastName, email, password, age)
-//         if (email === '' || password === '') return res.send('Data missing')
-    
-//         const newUser = {firstName, lastName, email, password: createHash(password), age}
-//         const result = sessionsService.createUser(newUser)
-        
-//         const token = generateToken({
-//             id: result._id
-//         })
-
-//         res.status(200).cookie('cookieToken', token, {maxAge: 60 * 60 * 1000 * 24, httpOnly: true}).send({
-//             status: 'success',
-//             message: 'User created',
-//             token
-//         })
-
-//         res.redirect('/products')
-        
-//     } catch (error) {
-//         res.send({status: 'error', error: error.message})
-//     }
-// })
-
-router.post('/register', passport.authenticate('registerpassport'),  async (req, res) => {
-    const username = req.body.username || (req.user && req.user.username);
-
-    res.send({status: 'success', message: 'User created', username})
-})
-
-router.post('/login', passport.authenticate('loginpassport'), async (req, res) => {
+router.post('/login', passport.authenticate('loginpassport', {session: false}), async (req, res) => {
     if (!req.user) return res.status(401).send({ status: "error", error: "Invalid credentials" })
 
     req.session.user = {
-        first_name: req.user.first_name,
-        last_name: req.user.last_name,
-        email: req.user.email,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        email: req.user.email
     }
-    
-    res.send({ status: "success", message: "Logged in", user: req.session.user })
+
+    res.send({status: 'success', message: 'User logged in', user: req.session.user})
 })
+
+router.post('/register', passport.authenticate('registerpassport', {session: false}), async (req, res)=> {
+    try {
+        const username = req.body.username || (req.user && req.user.username)
+        res.send({status: 'success', message: 'User created', username})
+  
+    } catch (error) {
+        res.send({status: 'error', error: error.message})
+    }
+})
+
 
 router.get('/current', passportCall('jwt'), authorization('user') , async (req, res)=> {
     res.send('<h1>Datos sensibles</h1>')
