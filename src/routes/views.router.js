@@ -38,4 +38,6 @@ router.get("/sessions/register", (req, res) => {
     res.render("register")
 })
 
+
+
 export default router

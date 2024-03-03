@@ -11,6 +11,7 @@ import sessionsRouter from "./routes/sessions.router.js"
 import { Server } from "socket.io";
 import { manager } from "./dao/FileSystem/productManagerFile.js";
 import connectDB from "./config/connectDB.js";
+import { configObject } from "./config/connectDB.js";
 import logger from 'morgan';
 import cookieParser from "cookie-parser";
 import session from "express-session";
@@ -20,6 +21,7 @@ import passport from "passport";
 import initializePassport from "./config/passport.config.js";
 
 const app = express()
+const PORT = configObject.port
 
 connectDB()
 
@@ -75,8 +77,8 @@ app.post('/file', upload.single('myFile'), (req, res) => {
   res.send("File uploaded successfully")
 })
 
-const httpServer = app.listen(8080, ()=>{
-    console.log('Escuchando en el puerto 8080')
+const httpServer = app.listen(PORT, ()=>{
+    console.log('Escuchando en el puerto: ' + PORT)
 } )
 
 const socketServer = new Server(httpServer)

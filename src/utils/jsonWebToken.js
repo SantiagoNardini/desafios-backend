@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken'
+import { configObject } from '../config/connectDB.js'
 
-export const private_key = 'secretKey'
-const generateToken = (user) => jwt.sign(user, private_key, {expiresIn: '24h'})
+const { secretOrKey } = configObject
+
+const generateToken = (user) => jwt.sign(user, secretOrKey, {expiresIn: '24h'})
 
 export const authTokenMiddleware = (req, res, next) => {
     const authHeader = req.headers['authorization']
@@ -10,7 +12,7 @@ export const authTokenMiddleware = (req, res, next) => {
 
     const token = authHeader.split(' ')[1]
 
-    jwt.verify(token, private_key, (error, decodeUser) => {
+    jwt.verify(token, secretOrKey, (error, decodeUser) => {
         if (error) return res.status(401).send({status: 'error', message: 'Invalid token'})
 
         req.user = decodeUser
