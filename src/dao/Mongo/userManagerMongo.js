@@ -2,54 +2,24 @@ import { userModel } from "../models/users.model.js";
 
 class UserManagerMongo {
     async getUsers() {
-        try {
-            const users = await userModel.find({})
-            return users
-        } catch (error) {
-            console.log(error)
-        }
+        return await userModel.find({})
     }
     async getUserById(uid) {
-        try {
-            const user = await userModel.findOne({_id: uid})
-            return user
-        } catch (error) {
-            console.log(error)
-        }
+        return await userModel.findOne({_id: uid})
     }
 
     async getUserBy(filter) {
-        try {
-            const user = await userModel.findOne(filter)
-            return user
-        } catch (error) {
-            console.log(error)
-        }
+        return await userModel.findOne(filter)
     }
     async createUser(userNew) {
-        try {
-            const newUser = await userModel.create(userNew)
-            return newUser
-        } catch (error) {
-            console.log(error)
-        }
+        return await userModel.create(userNew)
     }
     async updateUser(uid, userUpdate) {
-        try {
-            const updatedUser = await userModel.updateOne({_id: uid}, userUpdate)
-            return updatedUser
-        } catch (error) {
-            console.log(error)
-        }
+        return await userModel.updateOne({_id: uid}, userUpdate, {new: true})
     }
 
     async deleteUser(uid) {
-        try {
-            const deletedUser = await userModel.deleteOne({_id: uid})
-            return deletedUser
-        } catch (error) {
-            console.log(error)
-        }
+        return await userModel.deleteOne({_id: uid})
     }
 }
 

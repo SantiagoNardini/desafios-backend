@@ -3,49 +3,23 @@ import { productsModel } from "../models/products.model.js"
 class ProductsManagerMongo {
 
     async getProducts() {
-        try {
-            const products = await productsModel.find()
-            return products
-        } catch (error) {
-            console.log(error)
-        }
+        return await productsModel.find({isActive: true})
     }
 
     async getProductById(pid) {
-        try {
-            const product = await productsModel.findOne({ _id: pid })
-            return product
-        } catch (error) {
-            console.log(error)
-        }
+        return await productsModel.findOne({ _id: pid })
     }
 
     async addProduct(product) {
-        try {
-            const newProduct = new productsModel(product)
-            await newProduct.save()
-            return newProduct
-        } catch (error) {
-            console.log(error)
-        }
+        await productsModel.create(product)
     }
 
     async updateProduct(pid, product) {
-        try {
-            const updatedProduct = await productsModel.updateOne({ _id: pid }, product)
-            return updatedProduct
-        } catch (error) {
-            console.log(error)
-        }
+        await productsModel.updateOne({ _id: pid }, product, { new: true })
     }
 
     async deleteProduct(pid) {
-        try {
-            const deletedProduct = await productsModel.deleteOne({ _id: pid })
-            return deletedProduct
-        } catch (error) {
-            console.log(error)
-        }
+        await productsModel.deleteOne({ _id: pid }, {isActive: false} ,{ new: true })
     }
 }
 

@@ -33,6 +33,14 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: Boolean,
+    default: true
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  }
 });
 
 ProductSchema.plugin(mongoosePaginate);

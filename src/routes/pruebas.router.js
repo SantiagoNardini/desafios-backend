@@ -1,4 +1,6 @@
 import { Router } from "express"
+import { sendEmail } from "../utils/sendEmail.js"
+import { sendSms } from "../utils/sendSms.js"
 const router = Router()
 
 router.get('/session', (req, res)=> {
@@ -9,6 +11,19 @@ router.get('/session', (req, res)=> {
         req.session.counter = 1
         res.send('Primera vez logueado')
     }
+})
+
+router.get('/mail', (req, res)=> {
+    const destination = 'nardinisantiago@gmail.com'
+    const subject = 'Prueba de email'
+    const html = '<h1>Prueba de email</h1><p>Mail de prueba</p>'
+    sendEmail(destination, subject, html)
+    res.send('Email enviado')
+})
+
+router.get('/sms', (req, res)=> {
+    sendSms('Santiago', 'Nardini')
+    res.send('SMS enviado')
 })
 
 router.get('/logout', (req, res)=> {
@@ -41,5 +56,6 @@ router.get('/deleteCookie', (req, res)=> {
 router.get('/:parametro', (req, res)=> {
     res.send(req.params.parametro)
 })
+
 
 export default router

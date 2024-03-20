@@ -2,7 +2,7 @@ import fileSystem from 'fs'
 const {promises} = fileSystem
 const fs = promises
 
-class CartManager {
+class CartManagerFile {
     constructor() {
         this.path = './carts.json';
     }
@@ -81,4 +81,4 @@ class CartManager {
     }
 }
 
-export default CartManager
+export default CartManagerFile

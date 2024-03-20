@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import { productsModel } from "./products.model.js"
 
 const cartCollection = 'carts'
 
@@ -14,6 +15,10 @@ const cartSchema = new mongoose.Schema({
             required: true
         }
     }]
+})
+
+cartSchema.pre("findById",function(){
+    this.populate(productsModel.product)
 })
 
 export const cartModel = mongoose.model(cartCollection, cartSchema)

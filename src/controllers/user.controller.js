@@ -1,13 +1,14 @@
 import UserManagerMongo from '../dao/Mongo/userManagerMongo.js'
+import { userService } from '../services/index.js'
 
 class UserController {
     constructor(){
-        this.service = new UserManagerMongo()
+        this.service = userService
     }
 
     getUsers = async (req, res) => {
         try {
-            const users = await this.service.find()
+            const users = await this.service.getUsers()
             res.json({
                 status: 'success',
                 result: users

@@ -11,7 +11,8 @@ const {
     addProductToCart,
     updateProductFromCart,
     deleteProductFromCart,
-    deleteCart
+    deleteCart,
+    purchaseCart
 } = new CartsController()
 
 CartRouter.get("/", getCarts)
@@ -32,5 +33,7 @@ CartRouter.put("api/carts/:cid", updateCart)
 CartRouter.delete("/:cid", deleteCart)
 
 CartRouter.delete("api/carts/:cid/products/:pid", deleteProductFromCart)
+
+CartRouter.post("/:cid/purchase", purchaseCart)
 
 export default CartRouter;

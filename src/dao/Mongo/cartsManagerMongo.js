@@ -21,7 +21,8 @@ class CartsManagerMongo {
 
     async addCart() {
         try {
-            const newCart = await cartModel.create({})
+            const newCart = await cartModel.create({products: []})
+            console.log('Nuevo carrito creado:', newCart)
             return newCart
         } catch (error) {
             console.log(error)

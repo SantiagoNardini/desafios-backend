@@ -1,13 +1,14 @@
-import CartsManagerMongo from "../dao/Mongo/cartsManagerMongo.js"
+import { CartDao, TicketDao } from "../dao/factory.js"
 
 class CartsController {
     constructor(){
-        this.service = new CartsManagerMongo()
+        this.service = new CartDao()
+        this.ticketService = new TicketDao()
     }
 
     getCarts = async (req, res) => {
         try {
-            const carts = await this.service.getCarts().populate('products._id')
+            const carts = await this.service.getCarts().populate('products.product')
             return carts
         } catch (error) {
             console.log(error)
@@ -16,7 +17,7 @@ class CartsController {
     
     getCartById = async (req, res) => {
         try {
-            const cart = await this.service.getCartById(id).populate('products._id')
+            const cart = await this.service.getCartById(id).populate('products.product')
             return cart
         } catch (error) {
             console.log(error)
@@ -25,7 +26,8 @@ class CartsController {
     
     addCart = async (req, res) => {
         try {
-            const newCart = await this.service.addCart({})
+            const createCart = {products: []}
+            const newCart = await this.service.addCart(createCart)
             return newCart
         } catch (error) {
             console.log(error)
@@ -88,6 +90,45 @@ class CartsController {
             console.log(error)
         }
     }
+
+    purchaseCart = async (req, res) => {
+        try {
+            const { cid } = req.params
+            const cart = await this.service.getCartById({_id: cid})
+            
+            if (!cart || cart.products.length === 0 || !cart.products) {
+                return res.json({
+                    status: 'error',
+                    error: 'Cart not found'
+                })
+            }
+
+            let total = 0
+            cart.products.forEach(product => {
+                total += product.quantity * product.price
+            })
+
+            const ticketData = {
+                code: Math.floor(Math.random() * 1000000),
+                purchase_datetime: new Date(),
+                amount: total,
+            }
+
+            const ticket = await this.ticketService.createTicket(ticketData)
+
+            res.json({
+                status: 'success',
+                result: ticket
+            })
+        } catch (error) {
+            console.log(error)
+            res.json({
+                status: 'Error al procesar compra',
+                error
+            })
+        }
+    }
+
 }
 
 export default CartsController

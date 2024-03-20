@@ -1,43 +1,30 @@
-import express from "express"
-import { manager } from "../dao/FileSystem/productManagerFile.js"
-import { productsModel } from "../dao/models/products.model.js"
+import { Router } from "express"
+import ViewController from "../controllers/views.controller.js"
 
-const router = express.Router()
+const viewRouter = Router()
 
-router.get("/", async (req, res) => {
-    const data = await manager.getProducts()
-    if (data) {
-    res.render("home", {data})
-    }
-})
+const {
+    getHome,
+    getRealTimeProducts,
+    getChat,
+    getProducts,
+    getCarts,
+    getLogin,
+    getRegister
+} = new ViewController()
 
-router.get("/realtimeproducts", (req, res) => {
-    res.render("realTimeProducts", {})
-})
+viewRouter.get("/", getHome)
 
-router.get("/messages", (req, res) => {
-    res.render("chat", {})
-})
+viewRouter.get("/realtimeproducts", getRealTimeProducts)
 
-router.get("/products", async(req, res) => {
-    const { limit = 10, pageQuery = 1 } = req.query
-    const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, page } = await productsModel.paginate({}, { limit, page: pageQuery, lean: true })
-    console.log(page)
-    res.render("products", { docs, hasPrevPage, hasNextPage, nextPage, prevPage, page })
-})
+viewRouter.get("/messages", getChat)
 
-router.get("/carts/:cid", async(req, res) => {
-    res.render("carts", {})
-})
+viewRouter.get("/products", getProducts)
 
-router.get("/sessions/login", (req, res) => {
-    res.render("login")
-})
+viewRouter.get("/carts/:cid", getCarts)
 
-router.get("/sessions/register", (req, res) => {
-    res.render("register")
-})
+viewRouter.get("/sessions/login", getLogin)
 
+viewRouter.get("/sessions/register", getRegister)
 
-
-export default router
+export default viewRouter
