@@ -1,8 +1,9 @@
 import { CartDao, TicketDao } from "../dao/factory.js"
+import { cartService } from "../services/index.js"
 
 class CartsController {
     constructor(){
-        this.service = new CartDao()
+        this.service = cartService
         this.ticketService = new TicketDao()
     }
 
