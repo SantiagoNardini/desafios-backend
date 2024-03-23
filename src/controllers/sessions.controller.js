@@ -2,22 +2,26 @@ import UserManagerMongo from "../dao/Mongo/userManagerMongo.js"
 import createHash from "../utils/hashBcrypt.js"
 import { isValidPassword } from "../utils/hashBcrypt.js"
 import generateToken from "../utils/jsonWebToken.js"
-import UserController from "./user.controller.js"
+import { cartService, productService, userService } from "../services/index.js"
 
 class SessionController {
     constructor() {
         this.service = new UserManagerMongo()
+        this.cartService = cartService
+        this.productService = productService
+        this.userService = userService
     }
 
     register = async (req, res) => {
         try {
-            const{firstName, lastName, email, password}= req.body
+            const{firstName, lastName, email, password, age}= req.body
     
             const userNew= {
             firstName, 
             lastName,
             email,
-            password: createHash(password)
+            password: createHash(password),
+            age
             }
             const result = await this.service.createUser(userNew)
             const token = generateToken({
@@ -52,6 +56,10 @@ class SessionController {
             email: user.email,
             role: user.role
             })
+
+            const newCart = await this.cartService.addCart();
+            // Actualiza el ID del carrito en el documento del usuario
+            await this.userService.updateUser(user._id, { cartID: newCart._id });
         
             res.cookie("cookieToken", token, {
                 maxAge : 60 * 60 * 1000 *24,

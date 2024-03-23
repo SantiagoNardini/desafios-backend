@@ -1,10 +1,12 @@
 import { CartDao, TicketDao } from "../dao/factory.js"
-import { cartService } from "../services/index.js"
+import { cartService, productService, userService } from "../services/index.js"
 
 class CartsController {
     constructor(){
         this.service = cartService
-        this.ticketService = new TicketDao()
+        this.userService = userService
+        this.productService = productService
+        this.cartService = cartService
     }
 
     getCarts = async (req, res) => {
@@ -27,9 +29,31 @@ class CartsController {
     
     addCart = async (req, res) => {
         try {
-            const createCart = {products: []}
-            const newCart = await this.service.addCart(createCart)
-            return newCart
+        const userId = req.user._id; 
+        const newCart = await this.cartService.addCart();
+        console.log('Nuevo carrito:', newCart);
+
+        if (!newCart) {
+        console.error('Error al crear el carrito. newCart es null o undefined.');
+        res.status(500).send('Error al crear el carrito');
+        return;
+        }
+
+        const cartId = newCart._id;
+        // Actualizar el campo cartID del usuario con el ID del carrito creado
+        const updatedUser = await this.userService.findByIdAndUpdate(userId, { cartID: cartId }, { new: true });
+
+        // Verificar si se pudo actualizar el usuario
+        if (!updatedUser) {
+        console.error('Error al actualizar el campo cartID del usuario.');
+        res.status(500).send('Error al actualizar el campo cartID del usuario.');
+        return;
+        }
+
+        // Obtener el carrito actualizado
+        const updatedCart = await this.cartService.getCartById(cartId);
+
+        res.json(updatedCart);
         } catch (error) {
             console.log(error)
         }
@@ -46,12 +70,22 @@ class CartsController {
 
     addProductToCart = async (req, res) => {
         try {
-            const { cid, pid } = req.params
-            const updateCart = await this.service.addProductToCart({_id: cid}, {$push: {products: pid}})
-            res.json({
-                status: 'success',
-                result: updateCart
-            })
+            const { pid } = req.params;
+            const { title, description, price, quantity } = req.body;
+
+            // Obtener el ID de usuario
+            const userId = req.user._id;
+            console.log(userId);
+
+        //Verificar si el usuario tiene carrito 
+            let user = await this.userService.getUserById(userId);
+            let cartId = user.cartID;
+
+            // Agrego producto con el id del producto
+            await this.cartService.addProductToCart(cartId, { pid, title, description, price, quantity });
+
+            res.status(200).json({ message: 'Producto agregado al carrito correctamente' });
+
         } catch (error) {
             console.log(error)
         }    

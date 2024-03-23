@@ -8,6 +8,13 @@
             <p>imagen:{{this.thumbnail}}</p>
             <p>Precio:{{this.price}}</p>
             <p>Categoria:{{this.category}}</p>
+
+            <form action="http://localhost:8080/carts/65fef74c5d0e6d53351108e9/products/{{this._id}}" method="POST">
+            <input type="hidden" name="title" value="{{this.title}}">
+            <input type="hidden" name="description" value="{{this.description}}">
+            <input type="hidden" name="price" value="{{this.price}}">
+            <button type="submit">Agregar al carrito</button>
+            </form>
         {{/each}}
         {{#if hasPrevPage}}
             <a href="products?pageQuery={{prevPage}}">Anterior</a>
