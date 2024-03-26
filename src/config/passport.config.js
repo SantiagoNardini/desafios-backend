@@ -1,25 +1,21 @@
-import passport from "passport"
-import localStrategy from "passport-local"
-import GithubStrategy from "passport-github2"
-import { userModel } from '../dao/models/users.model.js'
-import createHash from "../utils/hashBcrypt.js"
-import isValidPassword from "../utils/hashBcrypt.js"
-import passportJWT from "passport-jwt"
+const passport = require("passport")
+const jwt = require('passport-jwt')
+const { config } = require("./config")
 
-const JWTStrategy = passportJWT.Strategy
-const ExtractJWT = passportJWT.ExtractJwt
+const JWTStrategy = jwt.Strategy // core de la estrategia de jwt
+const ExtractJWT = jwt.ExtractJwt // Extractor de jwt ya sea de headers, cookie, etc
+
+const cookieExtractor = req => {
+    let token = null
+    if (req && req.cookies) { // corroboramos que hay alguna cookie que tomar
+        token = req.cookies['token'] // tomamos solo la cookie que necesitamos
+        // console.log('cookie extractor',req.cookies)
+    }
+    // console.log('token: ', token)
+    return token
+}
 
 const initializePassport = () => {
-
-    const cookieExtractor = req => {
-        let token = null
-        if(req && req.cookies){
-            token = req.cookies['cookieToken']
-            console.log(token)
-        }
-        return token
-    }
-
     passport.use('jwt', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
         secretOrKey: 'secretKey' 
@@ -32,4 +28,6 @@ const initializePassport = () => {
     }))
 }
 
-export default initializePassport
+module.exports = {
+    initializePassport
+}

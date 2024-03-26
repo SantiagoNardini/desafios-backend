@@ -1,30 +1,28 @@
-import { Router } from "express"
-import ViewController from "../controllers/views.controller.js"
-
-const viewRouter = Router()
-
+const ClassRouter = require('./router')
 const {
-    getHome,
-    getRealTimeProducts,
-    getChat,
-    getProducts,
-    getCarts,
-    getLogin,
-    getRegister
-} = new ViewController()
+    renderInicio,
+    renderProfile,
+    renderDetalle,
+    renderCart,
+    renderProducts,
+    renderLogin,
+    renderRegister,
+    renderRealTimeProducts
+} = require('../controllers/views.controller')
+class ViewsRouter extends ClassRouter {
+    init(){      
+        this.get('/',                 ['PUBLIC'], renderProducts)
+        this.get('/inicio',           ['PUBLIC'], renderInicio)
+        this.get('/profile',          ['PUBLIC'], renderProfile)
+        this.get('/detalle/:pid',     ['PUBLIC'], renderDetalle)
+        this.get('/carts/:cid',       ['PUBLIC'],   renderCart)
+        this.get('/login',            ['PUBLIC'], renderLogin)
+        this.get('/register',         ['PUBLIC'], renderRegister)
+        this.get('/')
+        this.get('/realtimeproducts', ['PUBLIC'], renderRealTimeProducts)
+    }
+}
 
-viewRouter.get("/", getHome)
 
-viewRouter.get("/realtimeproducts", getRealTimeProducts)
 
-viewRouter.get("/messages", getChat)
-
-viewRouter.get("/products", getProducts)
-
-viewRouter.get("/carts/:cid", getCarts)
-
-viewRouter.get("/sessions/login", getLogin)
-
-viewRouter.get("/sessions/register", getRegister)
-
-export default viewRouter
+module.exports = new ViewsRouter()

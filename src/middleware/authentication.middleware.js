@@ -1,9 +1,13 @@
-export function auth (req, res, next) {
-    console.log('middleware auth', req.session.user)
-    if (req.session?.user?.email && req.session?.user?.role) {
-        return next()
-    } else {
-        res.status(401).send('Unauthorized')
+function auth (req, res, next){
+    console.log('auth: ',req.session)
+    
+    if (req.session?.user.name !== 'santiago' ) {
+        return res.send('No estas autorizado para ver esta página, por favor')
     }
     
+    return next()
+}
+
+module.exports = {
+    auth
 }

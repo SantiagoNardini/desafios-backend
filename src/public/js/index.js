@@ -1,56 +1,56 @@
 const socket = io()
 
-const btnCrear = document.querySelector("#btnCrear")
-const title = document.querySelector("#title")
-const description = document.querySelector("#description")
-const price = document.querySelector("#price")
-const thumbnail = document.querySelector("#thumbnail")
-const code = document.querySelector("#code")
-const stock = document.querySelector("#stock")
+let user
+let chatbok = document.getElementById('chatbox')
 
-const btnDelete = document.querySelector("#btnDelete")
-const id = document.querySelector("#id")
+Swal.fire({
+    title: 'Identifícate',
+    input: 'text',
+    text: 'Ingresar un usuario para identificarte.',
+    // icon: 'success',
+    inputValidator: value => { 
+        return !value && 'Necesitas escribir un nombre de usuario para continuar.!! '
+    },
+    allowOutsideClick: false
+}).then( resultado => {
+    user = resultado.value
+   socket.emit('authenticated',user)
+})  
 
-const historyProducts = document.querySelector("#historyProducts")
-
-
-btnCrear.addEventListener("click", () => {
-  let product = {
-    title: title.value,
-    description: description.value,
-    price: price.value,
-    thumbnail: thumbnail.value,
-    code: code.value,
-    stock: stock.value,
-  };
-  socket.emit("new-product", product)
-});
-
-btnDelete.addEventListener("click", () => {
-  socket.emit("delete-product", id.value)
-});
-
-socket.on("resp-new-product", (data) => {
-    updateHistory(data)
-});
-
-socket.on("resp-delete-product", (data) => {
-    updateHistory(data)
-});
-
-function updateHistory(data) {
-  historyProducts.innerHTML = ""
-  data.reverse().forEach((element) => {
-    historyProducts.innerHTML += `
-      <div>
-        <h3>${element.title}</h3>
-        <p>${element.description}</p>
-        <p>${element.price}</p>
-        <p>${element.thumbnail}</p>
-        <p>${element.code}</p>
-        <p>${element.stock}</p>
-        <p>ID: ${element.id}</p>
-      </div>
-    `
-  })
+const handleSocket = evt => {
+    if(evt.key === "Enter") {
+        if (chatbok.value.trim().length > 0) {
+            socket.emit('message', {
+                user,
+                message: chatbok.value
+            })
+            chatbok.value = ''
+        }
+    }
 }
+
+chatbok.addEventListener('keyup', handleSocket)
+
+socket.on('messageLogs', data => {
+    let log = document.getElementById('messageLogs')
+    let messages = ''
+    data.forEach(mensajes => {
+        messages = messages + `<li>${mensajes.user} dice: ${mensajes.message}</li><br>`
+    });
+    log.innerHTML = messages
+})
+
+socket.on('newUserConnected', data => {
+    
+    if(!user) return 
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 10000,
+        title: `${data} sea unido al chat`,
+        icon: "success"
+    })
+})
+
+

@@ -1,26 +1,36 @@
-import { productsModel } from "../models/products.model.js"
+const { ProductModel } = require("./models/products.model")
 
-class ProductsManagerMongo {
 
-    async getProducts() {
-        return await productsModel.find({isActive: true})
+
+class ProductDaosMongo {
+    constructor(){
+        this.product = ProductModel        
     }
 
-    async getProductById(pid) {
-        return await productsModel.findOne({ _id: pid })
+    async get({limit=10, page=1, category='', sort=1}){       
+                        
+        return await this.product.paginate(category.length!==0 ? {category: category} : {}, { limit, page, lean: true, sort: {price: sort}})                                
+        
     }
 
-    async addProduct(product) {
-        await productsModel.create(product)
+    async getById(pid){        
+        return await this.product.findById(pid).lean()        
     }
 
-    async updateProduct(pid, product) {
-        await productsModel.updateOne({ _id: pid }, product, { new: true })
+
+    async create(newProduct){        
+        return await this.product.create(newProduct)            // return newProduct
+        
     }
 
-    async deleteProduct(pid) {
-        await productsModel.deleteOne({ _id: pid }, {isActive: false} ,{ new: true })
+    async update(pid, updateProduct){        
+        return await this.product.findByIdAndUpdate({_id: pid}, updateProduct, {new: true})        
     }
+
+    async remove(pid){       
+        return await this.product.findByIdAndUpdate({ _id: pid }, { isActive: false }, {new: true})        
+    }
+
 }
 
-export default ProductsManagerMongo
+module.exports = ProductDaosMongo

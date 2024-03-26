@@ -1,11 +1,24 @@
-import { ProductDao, UserDao, CartDao } from "../dao/factory.js"
-import ProductRepository from "./product.repository.js"
-import UserRepository from "./user.repository.js"
-import CartRepository from "./carts.repository.js"
+const { 
+    UserDao, 
+    ProductDao, 
+    OrderDao, 
+    CartDao 
+} = require('../dao/factory.js') // Daos - Manager
 
-const userService = new UserRepository(new UserDao())
-const productService = new ProductRepository(new ProductDao())
-const cartService = new CartRepository(new CartDao())
+const ProductRepositories = require('../repositories/product.repositories.js') // Service
+const UserRepositories = require('../repositories/user.repositories.js')
+const OrderRepositories = require('../repositories/orders.repository.js')
+const CartRepositories = require('../repositories/cart.repositories.js')
 
 
-export { userService, productService, cartService }
+const userService = new UserRepositories(new UserDao())
+const productService = new ProductRepositories(new ProductDao())
+const cartService = new CartRepositories(new CartDao())
+const orderService = new OrderRepositories(new OrderDao())
+
+module.exports = {
+    userService,
+    productService,
+    cartService,
+    orderService
+}

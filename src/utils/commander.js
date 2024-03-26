@@ -1,9 +1,14 @@
-import { Command } from "commander";
+const {Command} = require('commander')
 
-const program = new Command();
+const commander = new Command()
 
-program
-    .option('--mode <mode>', 'Especificacion del entorno', 'dev')
+commander
+    .option('--mode <mode>', 'Modo de ejecución')
     .parse()
 
-export default program
+module.exports = {
+    commander
+}
+
+// nodemon src/app --mode development
+// nodemon src/app --mode production

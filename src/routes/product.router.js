@@ -1,24 +1,20 @@
-import { Router } from "express"
-import ProductController from "../controllers/products.controller.js"
+const Router = require('./router.js')
+const { 
+    getProducts, 
+    getProduct, 
+    createProducts, 
+    updateProduct, 
+    deleteProduct 
+} = require('../controllers/products.controller.js')
 
-const ProductsRouter = Router()
+class ProductsRouter extends Router {
+    init(){
+        this.get('/',       ['PUBLIC'], getProducts)
+        this.get('/:id',    ['PUBLIC'], getProduct)
+        this.post('/',      ['PUBLIC'], createProducts)
+        this.put('/:id',    ['PUBLIC'], updateProduct) 
+        this.delete('/:id', ['PUBLIC'], deleteProduct)
+    }
+}
 
-const {
-    getProducts,
-    getProductById,
-    addProduct,
-    updateProduct,
-    deleteProduct
-} = new ProductController()
-
-ProductsRouter.get('/', getProducts) 
-
-ProductsRouter.get("/:pid", getProductById)
-
-ProductsRouter.post("/", addProduct)
-
-ProductsRouter.put("/:pid", updateProduct)
-
-ProductsRouter.delete("/:pid", deleteProduct)
-
-export default ProductsRouter
+module.exports = new ProductsRouter()

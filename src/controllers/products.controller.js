@@ -1,76 +1,105 @@
-import ProductsManagerMongo from "../dao/Mongo/productsManagerMongo.js"
-import { productService } from "../services/index.js"
+const { productService } = require("../services/index")
 
-class ProductController {
-    constructor(){
-        this.service = productService
-    }
 
-    getProducts = async (req, res) => {
-        try {
-            const products = await this.service.getProducts()
-            res.send({
-                status: "success",
-                payload: products
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    }
+class ProductClass {
     
-    getProductById = async (req, res) => {
-        try {
-            const product = await this.service.getProductById({ _id: pid })
-            res.send({
-                status: "success",
-                payload: product
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    
-    addProduct = async (req, res) => {
-        try {
-            const { body } = req
-            const result = await this.service.addProduct(body)
-            res.send({
-                status: "success",
-                payload: result
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    
-    updateProduct = async (req, res) => {
-        try {
-            const { pid } = req.params
-            const { body } = req
+    getProducts = async (req, res) =>{
+        const {limit, page, category, sort} = req.query
 
-            const result = await this.service.updateProduct(pid, body)
-            res.send({
-                status: "success",
-                payload: result
+        const { docs, totalPages,hasPrevPage, hasNextPage, prevPage, nextPage } = await productService.getProducts({limit, page, category, sort})               
+        
+        if(!docs || docs.length === 0){
+            return res.status(404).json({
+                msg: 'No existen productos',
+                products: false
             })
-        } catch (error) {
-            console.log(error)
-        }
+        }   
+        res.status(200).json({
+            status: 'success',
+            payload: docs,
+            totalPages,
+            hasPrevPage,
+            hasNextPage,
+            prevPage,
+            nextPage,
+            prevLink: prevPage ? `http://localhost:8080/api/products?page=${prevPage}` : null,
+            nextLink: nextPage ? `http://localhost:8080/api/products?page=${nextPage}` : null,
+            page
+        })
     }
 
-    deleteProduct = async (req, res) => {
-        try {
-            const { pid } = req.params
-            const result = await this.service.deleteProduct(pid)
-            res.send({
-                status: "success",
-                payload: result
+    getProduct = async (req, res) =>{
+        const {id} = req.params
+        const product = await productService.getProduct(id)
+        if(!product){
+            return res.status(404).json({
+                status: 'error',
+                payload: 'No existe producto con ese id'
             })
-        } catch (error) {
-            console.log(error)
+        }   
+        res.status(200).json({
+            status: 'success',
+            payload: product
+        })
+    }
+
+    createProducts = async (req, res) =>{
+        const newProduct = req.body
+        //validar si vienene todos los campos
+        
+        // validar si no existe el producto
+        let respuesta = await productService.createProduct(newProduct)
+        // console.log(respuesta)
+        
+        if (!respuesta) {
+            return res.status(401).json({
+                status: 'error',
+                payload: 'Producto ya existe en la base de datos'
+            })
         }
+        res.status(201).json({
+            status: 'success',
+            payload: respuesta
+        })
+
+    }
+
+    updateProduct = async (req, res) =>{
+        const updateProduct = req.body
+        const { pid } = req.params
+    
+        const respuesta = await productService.updateProduct(pid, updateProduct)
+
+        if (!respuesta) {
+            return res.status(401).json({
+                status: 'error',
+                payload: 'Producto no existe en la base de datos'
+            })
+        }
+
+        res.status(200).json({
+            status: 'success',
+            payload: respuesta
+        })
+    }
+
+    deleteProduct = async (req, res) =>{
+        const { pid } = req.params
+
+        const respuesta = await productService.deleteProduct(pid)
+
+        if (!respuesta) {
+            return res.status(401).json({
+                status: 'error',
+                payload: 'Producto no existe en la base de datos'
+            })
+        }
+
+        res.status(200).json({
+            status: 'success',
+            payload: respuesta
+        })
     }
 }
 
-export default ProductController
-
+module.exports = new ProductClass()

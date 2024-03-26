@@ -1,23 +1,31 @@
-import jwt from 'jsonwebtoken'
-import { configObject } from '../config/connectDB.js'
+// importacion jwt
+const jwt = require('jsonwebtoken')
+const { config: {jwt_private_key} } = require('../config/config')
 
-const { secretOrKey } = configObject
 
-const generateToken = (user) => jwt.sign(user, secretOrKey, {expiresIn: '24h'})
+// crear la funcion que genera el token llamada generateToken
+const generateToken = ({user={}, expiresIn='24'}) => {
+    // console.log(user)
+    const token = jwt.sign(user, jwt_private_key, {expiresIn})
+    return token
+}
 
-export const authTokenMiddleware = (req, res, next) => {
+const authToken = (req, res, next) => {
     const authHeader = req.headers['authorization']
-
-    if (!authHeader) return res.status(401).send({status: 'error', message: 'No token provided'})
+    
+    if (!authHeader) return res.status(401).send({status: 'error',error: 'Not authenticated'})
 
     const token = authHeader.split(' ')[1]
+    jwt.verify(token, jwt_private_key, (err, credentials) => {
+        if (err) return res.status(403).send({status: 'error',error: 'Not authenticated'})
 
-    jwt.verify(token, secretOrKey, (error, decodeUser) => {
-        if (error) return res.status(401).send({status: 'error', message: 'Invalid token'})
-
-        req.user = decodeUser
+        req.user = credentials.user
+        
         next()
     })
 }
 
-export default generateToken
+module.exports = {
+    generateToken,
+    authToken
+}

@@ -1,26 +1,26 @@
-import { userModel } from "../models/users.model.js";
+const { userModel } = require("./models/users.model")
 
-class UserManagerMongo {
-    async getUsers() {
-        return await userModel.find({})
-    }
-    async getUserById(uid) {
-        return await userModel.findOne({_id: uid})
+
+class UserDaoMongo { // manager User
+    constructor() {
+        this.userModel = userModel
     }
 
-    async getUserBy(filter) {
-        return await userModel.findOne(filter)
+    get = async (limit, page)=> {                   
+            return await this.userModel.paginate({ },{limit, page, lean: true})              
     }
-    async createUser(userNew) {
-        return await userModel.create(userNew)
-    }
-    async updateUser(uid, userUpdate) {
-        return await userModel.updateOne({_id: uid}, userUpdate, {new: true})
+    getBy = async (email) => {                 
+        return await this.userModel.findOne({email})
     }
 
-    async deleteUser(uid) {
-        return await userModel.deleteOne({_id: uid})
+    create = async (newUser)=> {
+        try {
+            return await this.userModel.create(newUser)
+            // return newUser
+        } catch (error) {
+            return new Error(error)
+        }
     }
 }
 
-export default UserManagerMongo
+module.exports = UserDaoMongo

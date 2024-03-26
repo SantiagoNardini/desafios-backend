@@ -1,13 +1,19 @@
-import twilio from "twilio"
-import { configObject } from "../config/connectDB.js"
+const twilio = require('twilio')
+const config = require('../config/config.js')
 
-const { twilio_sid, twilio_token, twilio_number } = configObject
+const cliente = twilio(config.ACCOUNT_SID, config.AUTH_TOKEN)
 
+let user = {
+    nombre: 'Santiago',
+    apellido: 'Nardini'
+}
 
-const client = twilio(twilio_sid, twilio_token)
-
-export const sendSms = ( nombre, apellido ) => client.messages.create({
-    body: `Gracias por tu compra ${nombre} ${apellido}`,
-    from: twilio_number,
-    to: '+541133176661'
+const sendMessages = async () =>  cliente.messages.create({
+    body: `Gracias ${user.nombre} ${user.apellido} por la compra`,
+    from: 'whatsapp:+14155238886',
+    to: `whatsapp:${ config.NUMBER_MIO }`
 })
+
+module.exports = {
+    sendMessages
+}

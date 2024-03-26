@@ -1,37 +1,41 @@
-import connectDB, { configObject } from "../config/connectDB.js"
+const {config: {persistence, dbConnection}} = require('../config/config.js')
 
-let UserDao
 let ProductDao
+let UserDao
 let CartDao
-let MessagesDao
-let TicketDao
+let OrderDao
 
-switch (configObject.persistence) {
+switch ('MONGO') {
     case 'MONGO':
-        connectDB()
-        const {default: UserManagerMongo} = await import('./Mongo/userManagerMongo.js')
-        UserDao = UserManagerMongo
 
-        const {default: ProductsManagerMongo} = await import('./Mongo/productsManagerMongo.js')
-        ProductDao = ProductsManagerMongo
+        dbConnection() // 2 llamada a la conexión
+        const ProductDaoMongo = require('./Mongo/productsManagerMongo.js')
+        ProductDao = ProductDaoMongo
 
-        const {default: CartDaoMongo} = await import('./Mongo/cartsManagerMongo.js')
+        const UserDaoMongo = require('./Mongo/userManagerMongo.js')
+        UserDao = UserDaoMongo
+
+        const OrderDaoMongo = require('./Mongo/ordersManagerMongo.js')
+        OrderDao = OrderDaoMongo
+
+        const CartDaoMongo = require('./Mongo/cartsManagerMongo.js')
         CartDao = CartDaoMongo
-
-        const {default: MessagesManagerMongo} = await import('./Mongo/messagesManagerMongo.js')
-        MessagesDao = MessagesManagerMongo
-
-        const {default: TicketManagerMongo} = await import('./Mongo/ticketManagerMongo.js')
-        TicketDao = TicketManagerMongo
-
-        break;
+        
+        break
     case 'MEMORY':
-        const {default: ProductManagerFile} = await import('./FileSystem/productManagerFile.js')
-        ProductDao = ProductManagerFile
+       
+        break;
+    case 'ARCHIVO':
+        
+        break;
 
-        const {default: CartManagerFile} = await import('./FileSystem/cartManagerFile.js')
-        CartDao = CartManagerFile
+    default:
         break;
 }
 
-export { UserDao, ProductDao, CartDao, MessagesDao, TicketDao }
+module.exports = {
+    ProductDao,
+    UserDao,
+    CartDao,
+    OrderDao
+}

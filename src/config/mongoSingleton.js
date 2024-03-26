@@ -1,4 +1,5 @@
-import mongoose from "mongoose"
+const mongoose = require('mongoose')
+
 
 class MongoSingleton {
     static #instance
@@ -17,4 +18,13 @@ class MongoSingleton {
     }
 }
 
-export default MongoSingleton
+
+
+
+
+module.exports = MongoSingleton
+
+
+// const mongoInstance = MongoSingleton.getInstance()
+// const otherMongoInstance = MongoSingleton.getInstance()
+// MongoSingleton.getInstance()

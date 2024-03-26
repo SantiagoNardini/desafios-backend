@@ -1,11 +1,14 @@
+class UserDTO {
+    constructor(newUser){
+        this.first_name = newUser.nombre
+        this.last_name  = newUser.apellido
+        this.full_name  = `${newUser.nombre} ${newUser.apellido}`
+        this.email      = newUser.email
+        this.password   = `${newUser.nombre}123`
 
-class UserDto {
-    constructor(user) {
-        this.firstName = user.firstName
-        this.lastName = user.lastName
-        this.fullName = `${this.firstName} ${this.lastName}`
-        this.email = user.email
+        // this.active  = true
+        // this.phone   = newUser.phone ? newUser.phone.split('-').join('') : '' 
     }
 }
 
-export default UserDto
+module.exports = UserDTO

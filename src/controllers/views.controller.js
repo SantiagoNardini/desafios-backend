@@ -1,42 +1,117 @@
-import ProductsManagerMongo from "../dao/Mongo/productsManagerMongo.js"
-import { productsModel } from "../dao/models/products.model.js"
+const { productService, cartService, userService } = require('../services')
+const { logger } = require("../middleware/logger")
 
-export default class ViewController {
-    constructor() {
-        this.service = new ProductsManagerMongo()
+class ViewsController {
+    renderInicio = async (req, res) => {
+        try {
+            const products = [
+                {title: 'Gorra rosa',  price: 400, imageUrl: 'https://cdn.palbincdn.com/users/31244/images/GORRA-BASICA-JUNIOR-CUSTOMIZASHOPBF10B-COLOR-ROSA-1611838353.jpg', category:'gorras'},
+                {title: 'Gorra rosa',  price: 350, imageUrl: 'https://cdn.palbincdn.com/users/31244/images/GORRA-BASICA-JUNIOR-CUSTOMIZASHOPBF10B-COLOR-ROSA-1611838353.jpg', category:'gorras'},
+                {title: 'Gorra rosa',  price: 300, imageUrl: 'https://cdn.palbincdn.com/users/31244/images/GORRA-BASICA-JUNIOR-CUSTOMIZASHOPBF10B-COLOR-ROSA-1611838353.jpg', category:'gorras'},
+                {title: 'Gorra rosa',  price: 200, imageUrl: 'https://cdn.palbincdn.com/users/31244/images/GORRA-BASICA-JUNIOR-CUSTOMIZASHOPBF10B-COLOR-ROSA-1611838353.jpg', category:'gorras'},
+                {title: 'Gorra rosa',  price: 150, imageUrl: 'https://cdn.palbincdn.com/users/31244/images/GORRA-BASICA-JUNIOR-CUSTOMIZASHOPBF10B-COLOR-ROSA-1611838353.jpg', category:'gorras'}
+            ]
+    
+    
+            let users = [{email: 'santiago@gmail.com', password:'123', role: 'admin'}]
+            console.log('auth principal')
+            let testUser = {
+                name: 'Santiago',
+                last_name: 'Nardini',
+                role: 'admin',
+            }
+            // req.session.user = testUser.name
+            // req.session.admin = true
+            res.status(200).render('index', {
+                user: testUser,
+                isAdmin: testUser.role==='admin',
+                products,
+                showNav: true
+                // style: 'index.css'
+            })        
+        } catch (error) {
+            logger.info(error)
+        }
     }
-
-    getHome = async (req, res) => {
-        const data = await this.service.getProducts()
-        if (data) {
-            res.render("home", { data })
+    renderProfile = async (req, res) => {
+        try {            
+            res.status(200).render('profile', {
+                showNav: true
+            })            
+        } catch (error) {
+            logger.error(error)
+        }
+    }
+    
+    renderCart = async (req, res) => {
+        try {
+            const {cid} = req.params
+            
+            const cart = await cartService.getCart(cid)
+            console.log(cart.products)
+            res.render('carts', {
+                cart,
+                showNav: true
+            })        
+        } catch (error) {
+            logger.error(error)
         }
     }
 
-    getRealTimeProducts = (req, res) => {
-        res.render("realTimeProducts", {})
+    renderProducts = async (req, res) => {
+        try {
+            res.status(200).render('products', {
+                showNav: true
+            })        
+        } catch (error) {
+            logger.info(error)
+        }
     }
 
-    getChat = (req, res) => {
-        res.render("chat", {})
+    renderDetalle = async (req, res) => {
+        try {
+            const {pid} = req.params
+            const product = await productService.getProduct(pid)
+            res.render('detalle', {
+                product,
+                showNav: true
+            })
+        } catch (error) {
+            logger.error(error)
+        }
     }
-
-    getProducts = async (req, res) => {
-        const { limit = 10, pageQuery = 1 } = req.query
-        const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, page } = await productsModel.paginate({}, { limit, page: pageQuery, lean: true })
-        console.log(page)
-        res.render("products", { docs, hasPrevPage, hasNextPage, nextPage, prevPage, page })
+    
+    renderLogin            = async (req, res) => {
+        try {
+            res.status(200).render('login', {
+                showNav: true
+            })        
+        } catch (error) {
+            logger.info(error)
+        }
     }
-
-    getCarts = (req, res) => {
-        res.render("carts", {})
+    renderRegister = async (req, res) => {
+        try {
+                
+            res.status(200).render('register',{
+                showNav: true
+            })
+        } catch (error) {
+            logger.info(error)
+        }
     }
-
-    getLogin = (req, res) => {
-        res.render("login", {})
-    }
-
-    getRegister = (req, res) => {
-		res.render("register", {})
+    renderRealTimeProducts = async (req, res) => {
+        try {
+            // console.log('realtime products')
+            // return  res.send('realtime')
+            // const products = await Product.getProducts()
+            res.render('realtimeproducts', {
+                showNav: true
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
 }
+
+module.exports = new ViewsController()

@@ -1,51 +1,91 @@
-import { cartModel } from "../models/carts.model.js"
+const { cartModel } = require("./models/carts.model")
 
-class CartsManagerMongo {
-    async getCarts() {
+class CartDaoMongo{    
+    constructor(){
+        this.Cart = cartModel
+    }
+
+    async get(){
         try {
-            const carts = await cartModel.find().populate('products._id')
-            return carts
+            return await this.Cart.find()
+            
         } catch (error) {
-            console.log(error)
+            return  new Error(error)
+        }
+    }
+    
+    async getBy(cid){
+        try {            
+            const res = await this.Cart.findOne({_id: cid}).lean()
+            // console.log('cart mongo: ',JSON.stringify(res.products, null, 2))
+            return res
+        } catch (error) {
+            return new Error(error)
         }
     }
 
-    async getCartById(id) {
-        try {
-            const cart = await cartModel.findById(id).populate('products._id')
-            return cart
-        } catch (error) {
-            console.log(error)
+    async create(userEmail){
+        try {                
+            return await this.Cart.create({ userEmail, products: [] })
+        } catch (err) {
+           return new Error('Error creating cart'+err);
         }
     }
 
-    async addCart() {
+    async update(cid, product){        
         try {
-            const newCart = await cartModel.create({products: []})
-            console.log('Nuevo carrito creado:', newCart)
-            return newCart
+            const updatedCart = await this.Cart.findOneAndUpdate(
+                { _id: cid, 'products.product': product.id },
+                { $inc: { 'products.$.quantity': product.quantity } },
+                { new: true }
+            )
+          
+            if (updatedCart) {
+                // El producto ya estaba en el carrito, se actualizó su cantidad
+                return updatedCart
+            }
+          
+            // El producto no estaba en el carrito, se agrega con quantity en 1
+            const newProductInCart = await this.Cart.findOneAndUpdate(
+                { _id: cid },
+                { $push: { products: { product: product.id, quantity: product.quantity } } },
+                { new: true, upsert: true }
+            )
+          
+            return newProductInCart
         } catch (error) {
-            console.log(error)
+            return new Error('Error adding product to cart'+error)
+        }
+
+    }
+
+    // Delete api/carts/:cid/products/:pid
+    async deleteItem(cid, pid){
+        try {
+            return await this.Cart.findOneAndUpdate(
+                { _id: cid },
+                { $pull: { products: { product: pid } } },
+                { new: true }
+            )
+        } catch (error) {
+            return new Error('Error deleting product from cart'+error)
         }
     }
 
-    async updateCart(id, cart) {
+    // vaciar carrito
+    async delete(cid){
         try {
-            const updatedCart = await cartModel.updateOne({ _id: id }, cart)
-            return updatedCart
+            // console.log(cid)
+            return await this.Cart.findOneAndUpdate(
+                { _id: cid },
+                { $set: { products: [] } },
+                { new: true }
+            )
         } catch (error) {
-            console.log(error)
+            return new Error('Error deleting cart'+ error)
         }
     }
 
-    async deleteCart(id) {
-        try {
-            const deletedCart = await cartModel.deleteOne({ _id: id })
-            return deletedCart
-        } catch (error) {
-            console.log(error)
-        }
-    }
 }
 
-export default CartsManagerMongo
+module.exports = CartDaoMongo

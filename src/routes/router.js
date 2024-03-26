@@ -1,47 +1,95 @@
-import { Router } from "express"
-import jwt from "../utils/jsonWebToken.js"
+const { Router } = require('express')
+const jwt = require('jsonwebtoken')
+const passport = require('passport')
 
-class RouterClass {
+class ClassRouter {
     constructor() {
         this.router = Router()
+        this.init()
     }
 
-    getRouter = () => {
+    getRouter() {
         return this.router
     }
 
-    init (){}
+    init() {} // esta inicialización sera para sus clases heredadas
 
-    applyCallback(callbacks) {
-        return callbacks.map(callback => async (...params) => {
+    applyCallbacks(callbacks) {
+        // mapeamos los callbacks uno a uno, obteniendo sus parametros a partir de los ...params
+        return callbacks.map(callback => async(...params)=> {
             try {
+                // apply, ejecutará la función callback apuntando directamente a una
+                // instancia de la clase, por ello, colocamos this para que utilice 
+                // solo el contexto de este router, los parámetros son internos
+                // de cada callback, sabemos que los params de un callback corresponden a 
+                // req, res, next
                 await callback.apply(this, params)
             } catch (error) {
                 console.log(error)
+                // params[1] hace referencia a la res, por ello puedo mandar un send desde éste
                 params[1].status(500).send(error)
             }
         })
     }
 
-    generateCustomResponse = (req, res, next) => {
-        res.sendSuccess = payload => res.send({status: 'success', payload})
-        res.sendServerError = error => res.send({status: 'error', error})
-        res.sendUserError = error => res.send({status: 'error', error})
+    generateCustomResponses = (req, res, next) => {
+        // sendSuccess permitirá que el desarrollador
+        // sólo tenga que enviar el payload, el formato
+        // se gestionará de manera interna    
+        res.sendSuccess = payload => res.send({status: "success", payload})
+        res.sendServerError = err => res.status(500).send({status: "error", err})
+        res.sendUserError = err => res.status(400).send({status: "error", err})
+        next()
     }
 
-    handlePolicies = policies => (req, res, next) => {
-        if (policies[0] === 'public') next()
+    passportCall = strategy => {
+        return async (req, res, next) =>{
+            passport.authenticate(strategy, function(err, user, info){
+                if(err) return next(err)
+                // if(!user) return res.status(401).send({status: 'error', error: info.messages ? info.messages : info.toString()})
+                if(user) {
+                    // console.log('passportcall', user)
+                    req.user = user
+                    // console.log('user jwt', req.user)
+                }
+                next()
+            })(req, res, next)
+        }
+    }
+
+    handlePolicies = policies => (req, res, next) =>{
+        if (policies[0]==='PUBLIC') return next() // cualquiera puede entrar
         const authHeaders = req.headers.authorization
-        const token = authHeaders.split(' ')[1]
+        if(!authHeaders) return res.status(401).send({status: 'error', error: 'Unauthorized'})
+        const token = authHeaders.split(" ")[1] // removemos en Bearer
+        // obtenemos el usuario a partir del toquen
         let user = jwt.verify(token, 'secretKey')
-        if (!policies.includes(user.role.toUpperCase())) res.status(403).send({status: 'error', error: 'Unauthorized'})
+        // El rod del usuario existe dentro del arrego de políticas
+        if(!policies.includes(user.role.toUpperCase())) return res.status(403).send({status: 'error', err: 'No permissions'})
         req.user = user
         next()
     }
 
+    get(path, ...callbacks) {
+        this.router.get(path, this.applyCallbacks(callbacks))
+    }
+
     get(path, policies, ...callbacks) {
-        this.router.get(path, this.handlePolicies, this.generateCustomResponse, this.applyCallback(callbacks))
+        this.router.get(path, this.passportCall('jwt'), this.handlePolicies(policies), this.generateCustomResponses, this.applyCallbacks(callbacks))
+    }
+
+    post(path, policies, ...callbacks) {
+        this.router.post(path, this.handlePolicies(policies), this.generateCustomResponses, this.applyCallbacks(callbacks))
+    }
+
+    put(path, policies, ...callbacks) {
+        this.router.put(path,  this.passportCall('jwt'), this.handlePolicies(policies), this.generateCustomResponses, this.applyCallbacks(callbacks))
+    }
+
+    delete(path, policies, ...callbacks) {
+        this.router.delete(path, this.handlePolicies(policies), this.generateCustomResponses, this.applyCallbacks(callbacks))
     }
 }
 
-export default RouterClass
+
+module.exports = ClassRouter
