@@ -1,5 +1,6 @@
 const { productService, cartService, userService } = require('../services')
 const { logger } = require("../middleware/logger")
+const {faker} = require('@faker-js/faker')
 
 class ViewsController {
     renderInicio = async (req, res) => {
@@ -112,6 +113,29 @@ class ViewsController {
             console.log(error)
         }
     }
+
+    generateProducts = () => {
+        return {
+            id: faker.database.mongodbObjectId(),
+            title: faker.commerce.productName(),
+            description: faker.commerce.productDescription(),
+            thumbnail: faker.image.avatar(),
+            category: faker.commerce.department(),
+            price: faker.commerce.price(),
+        };
+    };
+    
+    mockingProducts = async (req, res) => {
+        let products = [];
+        for (let i = 0; i < 100; i++) {
+            products.push(this.generateProducts());
+        }
+        
+        res.send({
+            status: "",
+            payload: products
+        });
+    };
 }
 
 module.exports = new ViewsController()

@@ -14,7 +14,7 @@ const generateProduct = () => {
     }
 }
 
-exports.genereateUser = () => {
+const generateUser = () => {
     let numOfProducts = parseInt(faker.random.numeric(1, {banneDigits: ['0']}))
     let products = []
     for(let i=0; i<numOfProducts; i++){
@@ -38,4 +38,8 @@ exports.genereateUser = () => {
         // pais: faker.address.country(),
         // rol: 'user'
     }
+}
+
+module.exports = {
+    generateUser, generateProduct
 }

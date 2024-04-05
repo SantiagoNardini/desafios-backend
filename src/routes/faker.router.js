@@ -1,22 +1,53 @@
+const {faker} = require('@faker-js/faker')
 const {Router} = require('express')
-const { genereateUser } = require('../utils/faker')
- 
-const router = Router()
 
-router.get('/', (req, res) => {
-    try{
-        let user = []
-        for(let i=0; i<100; i++){
-            user.push(genereateUser())
-        }
 
-        res.send({
-            status: 'success',
-            payload: user
-        })
-    }catch(error){
-        console.log(error)
+const userFakeRouter = Router()
+
+const generateProducts = () =>{
+
+    return{
+        title:faker.commerce.productName(),
+        price: faker.commerce.price (),
+        departament: faker.commerce.department(),
+        stock: parseInt(faker.string.numeric()),
+        description : faker.commerce.productDescription(),
+        id: faker.database.mongodbObjectId(),
+        image: faker.image.url()
     }
+}
+
+const generateUser = ()=>{
+    let numberOfProducts = parseInt(faker.string.numeric(1, {bannedDigits: ["0"]}))
+    let products = []
+
+    for (let i= 0; i < numberOfProducts; i++) {
+        products.push(generateProducts())
+        
+    }
+    return {
+        id:faker.database.mongodbObjectId(),
+        first_name:faker.person.firstName(),
+        last_name: faker.person.lastName(),
+        sex: faker.person.sex(),
+        birthDate:faker.date.birthdate(),
+        phone: faker.phone.number(),
+        image:faker.image.avatar(),
+        email : faker.internet.email(),
+        products
+    }
+}
+
+userFakeRouter.get("/users", (req, res)=>{
+    let users= []
+    for (let i= 0; i <10; i++){
+        users.push(generateUser())
+    }
+    res.send({
+        status: '',
+        payload: users
+    })
+    
 })
 
-module.exports = router
+module.exports = userFakeRouter

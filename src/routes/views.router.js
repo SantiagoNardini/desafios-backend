@@ -7,7 +7,8 @@ const {
     renderProducts,
     renderLogin,
     renderRegister,
-    renderRealTimeProducts
+    renderRealTimeProducts,
+    mockingProducts
 } = require('../controllers/views.controller')
 class ViewsRouter extends ClassRouter {
     init(){      
@@ -20,6 +21,7 @@ class ViewsRouter extends ClassRouter {
         this.get('/register',         ['PUBLIC'], renderRegister)
         this.get('/')
         this.get('/realtimeproducts', ['PUBLIC'], renderRealTimeProducts)
+        this.get('/mockingproducts',  ['PUBLIC'], mockingProducts)
     }
 }
 
