@@ -1,6 +1,8 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const {engine} = require('express-handlebars')
+const swaggerJSDoc = require('swagger-jsdoc')
+const swaggerUi = require('swagger-ui-express')
 
 const cors = require('cors')
 // socket io _______________________________________________________________
@@ -40,6 +42,22 @@ app.use(cookieParser())
 // session mongo_______________________________________________________________
 // app.use(session(configObject.session))
 
+// swagger_______________________________________________________________
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Documentación de proyecto Backend',
+            description: 'Backend de un ecommerce',
+            version: '1.0.0'
+        }
+    },
+    apis: [`${__dirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJSDoc(swaggerOptions)
+app.use('/apidocs', swaggerUi.serve, swaggerUi.setup(specs))
+
 // passport _______________________
 initializePassport()
 app.use(passport.initialize()) 
@@ -48,7 +66,6 @@ app.use(passport.initialize())
 app.use(addLogger)
 
 app.use(router)
-
 
 // socket_______________________________________________________________
 initChatSocket(io)

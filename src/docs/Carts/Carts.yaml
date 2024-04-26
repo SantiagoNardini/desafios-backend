@@ -1,0 +1,103 @@
+paths:
+  /api/carts/:
+    get:
+      summary: Obtiene todos los carritos de compras
+      tags:
+        - Carts
+      responses: 
+        "200":
+          description: Obtiene todos los carritos de compras
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Cart"
+/api/carts/{cid}:
+    get:
+      summary: Obtiene un carrito de compras por su ID
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: El ID del carrito de compras que se desea obtener
+          schema:
+            type: string
+      responses:
+        "200":
+          description: El carrito de compras fue obtenido correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "404":
+          description: Carrito de compras no encontrado
+    put:
+      summary: Actualiza un carrito de compras por su ID
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: El ID del carrito de compras que se desea actualizar
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Cart"
+      responses:
+        "200":
+          description: El carrito de compras fue actualizado correctamente
+        "404":
+          description: Carrito de compras no encontrado
+
+    delete:
+      summary: Elimina un carrito de compras por su ID
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: El ID del carrito de compras que se desea eliminar
+          schema:
+            type: string
+      responses:
+        "204":
+          description: El carrito de compras fue eliminado correctamente
+        "404":
+          description: Carrito de compras no encontrado
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Id autogenerado por mongo 
+        userEmail:
+          type: string
+          description: Email del usuario
+        products:
+          type: array
+          description: Lista de productos agregados al carrito
+        product: 
+          type: string
+          description: Id del producto
+        quantity: 
+          type: number
+          description: Cantidad de productos
+      example:
+        _id: "660dbacda68290adc9f009b4"
+        userEmail: "dsaddas@gmail.com"
+        products:
+          product: "65fb3e677714d0a10b6e22a0"
+          quantity: 1
+          _id: "66035bd524c851d7bb18283b"
+        __v: 3

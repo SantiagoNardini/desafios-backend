@@ -36,7 +36,7 @@ const sendMail = async ({subject='', html='', attachments}) => {
     console.log(subject, html, attachments)
     
     return await transport.sendMail({
-        from:'Servicio de Node <defe014@gmail.com>',
+        from:'Servicio de Node <3QGQI@example.com>, Santiago Nardini <santiago@gmail.com>',
         to: config.TEST_MAIL,
         subject,
         html,
