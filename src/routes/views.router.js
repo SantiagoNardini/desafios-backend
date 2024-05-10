@@ -12,7 +12,7 @@ const {
 } = require('../controllers/views.controller')
 class ViewsRouter extends ClassRouter {
     init(){      
-        this.get('/',                 ['PUBLIC'], renderProducts)
+        this.get('/products',                 ['PUBLIC'], renderProducts)
         this.get('/inicio',           ['PUBLIC'], renderInicio)
         this.get('/profile',          ['PUBLIC'], renderProfile)
         this.get('/detalle/:pid',     ['PUBLIC'], renderDetalle)
